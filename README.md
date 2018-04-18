@@ -61,9 +61,10 @@ Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous 
  Adapt parameters in this file to GQRX settings (should be OK by default)  
  
  From the main window, you can :  
-	- read actual  VFO and LNB_LO values.  
+	- read actual GQRX VFO and LNB_LO values.  
 	- transfer the moRFeus freq to the GQRX VFO (generator mode, listen moRFeus signal)  
-	- tranfer the moRFeus freq to GQRX LNB_LO (moRFeus mixer mode). GQRX is now the real frequency (mixer + GQRX VFO) !  
+	- transfer the moRFeus freq to GQRX LNB_LO (moRFeus mixer mode).
+	  GQRX is now displaying the real frequency (mixer + GQRX VFO) !  
 	- reset GQRX LNB_LO freq. to 0 
 	  
  
@@ -74,7 +75,7 @@ Known bugs.
 ===========
 Lot ! 
 The most annoying is pressing "Cancel" button on the "step generator" window...  
-Program runs a little bit slower with GQRX support enabled. If you don't use GQRX you can disable the feature by setting
-GQRX_ENABLE=0 on this file.  
+Program runs a little bit slower with GQRX support enabled. 
+If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on this file.  
 
 
