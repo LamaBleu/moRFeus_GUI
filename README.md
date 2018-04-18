@@ -27,7 +27,7 @@ You need to be root to communicate with the device, launch the UI typing from sh
 Usage  
 =====
 
-![alt tag](https://imgur.com/UDjTAgM)  
+![image](https://user-images.githubusercontent.com/26578895/38947869-5274aa46-433e-11e8-8e76-18c5039fda80.png)
 
 - from shell 'cd' to GUI_moRFeus directory, type 'sudo ./GUI_moRFeus'  
 
@@ -37,9 +37,11 @@ Nothing else to say.
 Step generator
 ==============
 
-![alt tag](https://imgur.com/jfAnnqX)  
+![image](https://user-images.githubusercontent.com/26578895/38948007-aca71f4e-433e-11e8-9bfe-714a17975774.png)
 
-The best is to have a look at this screenshot first : https://imgur.com/6RdO9LO   
+
+
+The best is to have a look at this other screenshot first : https://imgur.com/6RdO9LO   
 Step generator mode will allow to increment the frequency (switched to generator mode) by steps (Hz) of regular interval (seconds)  
 Power can be set at this moment. moRFeus device will toggle to generator mode.  
 Steps can be negative (decremental steps) if F-start > F-end  
