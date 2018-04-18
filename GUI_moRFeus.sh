@@ -215,7 +215,7 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 --field=:LBL "" --form --field="Set Frequency:FBTN" "bash -c setfreq" \
 --field="set Generator mode:FBTN" "bash -c setgenerator" \
 --field="set Mixer mode:FBTN" "bash -c setmixer"  \
---field="Set Power:FBTN" "bash -c setcurrent" \
+--field="Set Power:FBTN" "bash -c setcurrent" --field=:LBL "" \
 --field='GQRX control':RO "  IP: $GQRX_IP Port: $GQRX_PORT"  \
 --field='GQRX Freq':RO "VFO: $GQRX_FREQ    LNB LO: $GQRX_LNB " \
 --field="Morfeus/Gen. + Freq --> GQRX (VFO):FBTN" "bash -c gqrx_vfo_send" \
@@ -321,11 +321,11 @@ echo "*** Incremental steps !"
 fi
 i=$((stepper_start_int))
 end=$(($stepper_stop_int))
+band=$(((end-i)/stepper_step_int))
 
 
-
-echo "Fstart: "$stepper_start_int " Fend: " $stepper_stop_int " Step Hz:  "$stepper_step_int " Hope-time : "$stepper_hop \
-"Power : "$stepper_current "  GQRX : "$GQRX_STEP
+echo "Fstart: "$stepper_start_int " Fend: " $stepper_stop_int " Step Hz: "$stepper_step_int "Hop-time: "$stepper_hop \
+"Jumps: "$band "  Power : "$stepper_current "  GQRX : "$GQRX_STEP
 
 # we need to switch to generator mode, and minimal power.
 $morf_tool_path/morfeus_tool Generator
@@ -337,11 +337,11 @@ if [[ $GQRX_STEP = "VFO" ]]; then
 	echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT	
 	
 fi
+k=0
 
 
-while [ $i -ne $end ]; do
-	
-echo "Freq: " $i   "GQRX: "$GQRX_STEP
+while [ $k -ne $band ]; do	
+
 $morf_tool_path/morfeus_tool setFrequency $i  
    if [[ $GQRX_STEP = "LNB_LO" ]]; then
       #send to LNB_LO
@@ -355,8 +355,10 @@ $morf_tool_path/morfeus_tool setFrequency $i
       #echo "GQRX VFO:  " $i
       echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT      
    fi  
-i=$(($i+$stepper_step_int))
-	
+
+k=$((k+1))
+
+echo "Freq: "$i" - GQRX: "$GQRX_STEP" - Jump "$k"/"$band
 sleep $stepper_hop
 
 done
