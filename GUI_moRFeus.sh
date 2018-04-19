@@ -359,6 +359,7 @@ $morf_tool_path/morfeus_tool setFrequency $i
 k=$((k+1))
 
 echo "Freq: "$i" - GQRX: "$GQRX_STEP" - Jump "$k"/"$band
+i=$(($i+$stepper_step_int))
 sleep $stepper_hop
 
 done
