@@ -3,14 +3,14 @@
 A simple tool to control your moRFeus device from your Linux-computer 
 
 Designed only for moRFeus (RF mixer/generator made by Outernet).  
-Product informations : https://outernet.is/pages/morfeus 
+Product informations : https://outernet.is/pages/morfeus   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 Feel free to use it, improve it. Code is very crude, with no error checking.  
 
 Installation  
 ============
 
-As pre-requisite you have to install yad and socat packages (sudo apt-get install yad socat)  
+As pre-requisite you have to install yad ,socat and bc packages (sudo apt-get install yad socat bc)  
 Download and copy this script into a directory.  
 Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
       Choose the right version, adapted to your platform.  (Linux-32 & 64b, ARM)    
