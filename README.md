@@ -9,6 +9,7 @@ Feel free to use it, improve it. Code is very crude, with no error checking.
 
 Installation  
 ============
+Note : a specific file [Rpi_moRFeus.sh](https://github.com/LamaBleu/moRFeus_GUI/RPi_moRFeus.sh) for Raspberry is now available for download in the same directory. Same instructions applies.
 
 As pre-requisite you have to install yad ,socat and bc packages (sudo apt-get install yad socat bc)  
 Download and copy this script into a directory.  
