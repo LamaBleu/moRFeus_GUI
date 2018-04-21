@@ -53,6 +53,7 @@
 #############
 ##########    Raspberry Pi specific : https://unix.stackexchange.com/a/118826
 export XAUTHORITY=~/.Xauthority 
+
 #############
 
 #  Path to moRFeus directory (to morfeus_tool and this script).
@@ -133,7 +134,6 @@ export -f gqrx_lnb_reset
 
 
 function setfreq () {
-
 freq_morf=${status_freq::-4}
 freq_morf_a="${freq_morf/$'.'/}"
 
@@ -141,6 +141,9 @@ INPUTTEXT=`yad  --center --width=270 --title="set Frequency" --form --text="  No
 INPUTTEXT1=${INPUTTEXT%,*}
 
 $morf_tool_path/morfeus_tool setFrequency $INPUTTEXT1
+
+
+
 export freq_morf_a
 #export INPUTTEXT1
 close_exit
@@ -153,11 +156,11 @@ export -f setfreq
 function gqrx_get () {
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
-GQRX_FREQ=$(echo 'f ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none ) 
-GQRX_LNB=$(echo 'LNB_LO ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none )
+GQRX_FREQ=$(echo 'f ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
+GQRX_LNB=$(echo 'LNB_LO ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
 #echo "GQRX VFO: $GQRX_FREQ   LNB LO: $GQRX_LNB"
-#else 
-#echo "GQRX disabled"
+else 
+echo "GQRX disabled"
 fi
 export GQRX_FREQ
 export GQRX_LNB
@@ -167,11 +170,13 @@ export -f gqrx_get
 
 
 function setcurrent () {
+
 INPUTTEXT=`yad --center --width=250 --title="set Power" --form --field="Power:CB" $status_current'!0!1!2!3!4!5!6!7' 2>/dev/null`  
 INPUTTEXT1=${INPUTTEXT%,3*}
 #echo "setCurrent : "$INPUTTEXT1"  , "
 status_current = INPUTTEXT1
 $morf_tool_path/morfeus_tool setCurrent $INPUTTEXT1
+
 export status_current
 close_exit
 
@@ -179,6 +184,7 @@ close_exit
 export -f setcurrent
 
 function setmixer () {
+
 $morf_tool_path/morfeus_tool setCurrent 0
 $morf_tool_path/morfeus_tool Mixer 
 
@@ -188,6 +194,7 @@ close_exit
 export -f setmixer
 
 function setgenerator () {
+
 $morf_tool_path/morfeus_tool Generator 
 
 close_exit
@@ -229,15 +236,15 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 --button="Step generator:3"  --button="Refresh:0" --button="Quit:1" 2>/dev/null)"  
 
 #echo $data
-
+#echo " gqrx_enable : "$GQRX_ENABLE
 ret=$?
 #echo $ret
 export ret
 
-if [[ $ret -eq 0 ]]; then
-	GQRX_LNB=0
-	
-fi
+#if [[ $ret -eq 0 ]]; then
+#	GQRX_LNB=0
+#	echo ""
+#fi
 
 
 
@@ -292,7 +299,7 @@ stepper_current=$(echo $(echo $(echo "$stepper" | cut -d\| -f 5)))
 GQRX_STEP=$(echo $(echo $(echo "$stepper" | cut -d\| -f 6)))
 
 
-echo $stepper
+#echo $stepper
 stepper_hop_dec="${stepper_hop//,/$'.'}"
 #stepper_hop="${stepper_hop_dec::-5}"
 stepper_hop=$stepper_hop_dec
@@ -329,12 +336,13 @@ echo "Fstart: "$stepper_start " Fend: " $stepper_stop " Step Hz: "$stepper_step_
 # we need to switch to generator mode, and minimal power.
 $morf_tool_path/morfeus_tool Generator
 $morf_tool_path/morfeus_tool setCurrent $stepper_current
-
-if [[ $GQRX_STEP = "VFO" ]]; then
-	#scanning start : setting GQRX LNB_LO to 0, to ensure display on correct VFO freq.
-	echo "gqrx lnb_lo reset"
-	echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT
-
+if [[ $GQRX_ENABLE -eq 1 ]];
+   then
+	if [[ $GQRX_STEP = "VFO" ]]; then
+		#scanning start : setting GQRX LNB_LO to 0, to ensure display on correct VFO freq.
+		echo "gqrx lnb_lo reset"
+		echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
+	fi
 fi
 k=0
 
@@ -342,18 +350,20 @@ k=0
 while [ $k -ne $band ]; do
 
 $morf_tool_path/morfeus_tool setFrequency $i
+if [[ $GQRX_ENABLE -eq 1 ]];
+   then
    if [[ $GQRX_STEP = "LNB_LO" ]]; then
       #send to LNB_LO
       #echo "GQRX LNB_LO:  " $i
-      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
+      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
    fi
 
    if [[ $GQRX_STEP = "VFO" ]]; then
       #send to VFO
       #echo "GQRX VFO:  " $i
-      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
+      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
    fi  
-
+fi
 k=$((k+1))
 
 echo "Freq: "$i" - GQRX: "$GQRX_STEP" - Jump "$k"/"$band
