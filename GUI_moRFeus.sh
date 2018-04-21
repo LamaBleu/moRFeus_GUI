@@ -56,7 +56,7 @@
 #  Path to moRFeus directory (to morfeus_tool and this script).
 ####### Adapt to real path if not working.
 #  Replacing $HOME by full name of directory may help
-export morf_tool_path=$HOME/GUI_moRFeus/
+export morf_tool_path=$HOME/moRFeus_GUI
 
 ####### GQRX settings - GRQX_ENABLE=0 to avoid 'connection refused' messages
 export GQRX_ENABLE=1
