@@ -12,6 +12,22 @@ Code is very crude, with no error checking. Feel free to use it, improve it.
 Installation  
 ============
 
+ #### Raspberry Pi
+ 
+ Installation is now really easy : 
+ 
+ 
+`git clone https://github.com/LamaBleu/moRFeus_GUI`
+`cd moRFeus_GUI`
+`chmod +x *.sh`
+`sudo ./RPi_moRFeus.sh`
+
+The script will download Outernet morfeus_tool executable, then install 'yad' bc' and 'socat' packages.
+Outernet device has to be connected to use the program.
+
+
+#### Linux
+
 * As pre-requisite you have to install yad ,socat and bc packages  
 
      sudo apt-get install yad socat bc  
