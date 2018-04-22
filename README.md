@@ -26,7 +26,7 @@ Installation
 The script will download Outernet morfeus_tool executable, then install 'yad' bc' and 'socat' packages.
 Outernet device has to be connected to use the program.
 
-Raspberry Pi screenshots (Stretch) : [Install at first launch](https://imgur.com/2Qbmq5h) , [connected to GQRX](https://imgur.com/ACr0HGj)
+Raspberry Pi screenshots (Stretch) : [Install at first launch](https://imgur.com/2Qbmq5h) , and Rpi-moRFeus [connected to GQRX](https://imgur.com/ACr0HGj)
 
 #### Linux
 
