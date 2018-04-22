@@ -17,10 +17,11 @@ Installation
  Installation is now really easy : 
  
  
-`git clone https://github.com/LamaBleu/moRFeus_GUI`
-`cd moRFeus_GUI`
-`chmod +x *.sh`
-`sudo ./RPi_moRFeus.sh`
+`git clone https://github.com/LamaBleu/moRFeus_GUI`  
+`cd moRFeus_GUI`  
+`chmod +x *.sh`  
+`sudo ./RPi_moRFeus.sh`  
+  
 
 The script will download Outernet morfeus_tool executable, then install 'yad' bc' and 'socat' packages.
 Outernet device has to be connected to use the program.
