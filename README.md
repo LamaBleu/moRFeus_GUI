@@ -2,7 +2,7 @@
 
 A simple tool to control your moRFeus device from your Linux-computer or Raspberry Pi
 
-Note : a specific file [RPi_moRFeus.sh](https://github.com/LamaBleu/moRFeus_GUI/RPi_moRFeus.sh) for **Raspberry Pi** is now available for download. Installation procedure is the same.
+Note : a specific file [RPi_moRFeus.sh](https://github.com/LamaBleu/moRFeus_GUI/RPi_moRFeus.sh) for **Raspberry Pi** is now available for download.
 
 Designed only for moRFeus (RF mixer/generator made by Outernet).  
 Product informations : https://outernet.is/pages/morfeus   
