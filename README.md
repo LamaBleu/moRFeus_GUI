@@ -12,12 +12,15 @@ Code is very crude, with no error checking. Feel free to use it, improve it.
 Installation  
 ============
 
-As pre-requisite you have to install yad ,socat and bc packages (sudo apt-get install yad socat bc)  
-Download and copy this script into a directory.  
-Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
-      Choose the right version, adapted to your platform.  (Linux-32 & 64b, ARM)    
-      Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
-      Make all files executable (cd to directory then 'chmod +x *'). No need to change files owner. 
+* As pre-requisite you have to install yad ,socat and bc packages  
+
+     sudo apt-get install yad socat bc  
+     
+* Download and copy this script into a directory.  
+* Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
+- Choose the right version, adapted to your platform.  (Linux-32 & 64b, ARM)    
+- Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
+- Make all files executable (cd to directory then 'chmod +x *'). No need to change files owner. 
  
 
 !!!!!! IMPORTANT !!!!!!  
