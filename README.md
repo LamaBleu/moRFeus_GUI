@@ -1,15 +1,16 @@
 # moRFeus_GUI
 
-A simple tool to control your moRFeus device from your Linux-computer 
+A simple tool to control your moRFeus device from your Linux-computer or Raspberry Pi
+
+Note : a specific file [RPi_moRFeus.sh](https://github.com/LamaBleu/moRFeus_GUI/RPi_moRFeus.sh) for **Raspberry Pi** is now available for download. Installation procedure is the same.
 
 Designed only for moRFeus (RF mixer/generator made by Outernet).  
 Product informations : https://outernet.is/pages/morfeus   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
-Feel free to use it, improve it. Code is very crude, with no error checking.  
+Code is very crude, with no error checking. Feel free to use it, improve it. 
 
 Installation  
 ============
-Note : a specific file [Rpi_moRFeus.sh](https://github.com/LamaBleu/moRFeus_GUI/RPi_moRFeus.sh) for Raspberry is now available for download in the same directory. Same instructions applies.
 
 As pre-requisite you have to install yad ,socat and bc packages (sudo apt-get install yad socat bc)  
 Download and copy this script into a directory.  
@@ -27,6 +28,8 @@ You need to be root to communicate with the device, launch the UI typing from sh
 
 Usage  
 =====
+
+At launch actual moRFeus settings are collected and displayed on the first three lines.
 
 ![image](https://user-images.githubusercontent.com/26578895/38947869-5274aa46-433e-11e8-8e76-18c5039fda80.png)
 
@@ -46,8 +49,8 @@ The best is to have a look at this other screenshot first : https://imgur.com/6R
 Step generator mode will allow to increment the frequency (switched to generator mode) by steps (Hz) of regular interval (seconds)  
 Power can be set at this moment. moRFeus device will toggle to generator mode.  
 Steps can be negative (decremental steps) if F-start > F-end  
-Sending freq to GQRX/VFO allow you to follow the signal in GQRX during the stepping-sequence.  
-Try to listen the audio signal (CW mode) of the generator. Very stable and clean !  
+Sending freq to GQRX/VFO allow you **to follow the signal in GQRX** during the stepping-sequence.  
+Try to listen the audio signal (set GQRX in CW mode) of the generator. Very stable and clean !  
 Here is an example : [screenshot](https://imgur.com/vmZoEP2) and [related audio](https://vocaroo.com/i/s0efbrP0W1cP)
 
 When using this feature please consider : 
