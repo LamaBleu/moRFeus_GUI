@@ -6,19 +6,22 @@
 #
 # INSTALLATION (Raspberry PI3)
 # ========================
-# As pre-requisite you have to install yad, socat and bc packages (sudo apt-get install yad socat bc)
-# Download and copy this script into a directory.
-# Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/
-#      Choose the right version, adapted to your platform.  (Linux-32 & 64b, ARM)
-#      Copy the tool to the same directory. RENAME it 'morfeus_tool' ! 
-#      Make all files executable (cd to directory then 'chmod +x *'). No need to change files owner. 
-# 
+
+#For Raspberry, installation is now automatic.
+#The script will download morfeus_tool from Outernet website, and check if packages 'yad' bc' and
+# 'socat' are missing.
+#
+#    git clone https://github.com/LamaBleu/moRFeus_GUI
+#    cd moRFeus_GUI
+#    chmod +x *.sh
+#    sudo ./RPi_moRFeus.sh
+
 
 #  !!!!!! IMPORTANT !!!!!!
 # As you need to be root to communicate with the device, launch the UI typing from shell : 
 #  " sudo <directory_path>/GUI_moRFeus.sh"
 
-# Again do not forget to rename the executable to 'morfeus_tool'
+
 
 
 # GQRX support
@@ -60,6 +63,18 @@ export XAUTHORITY=~/.Xauthority
 ####### Adapt to real path if not working.
 #  Replacing $HOME by full name of directory may help
 export morf_tool_path=/home/pi/moRFeus_GUI
+
+if [ ! -f $morf_tool_path/morfeus_tool ]; then
+    echo "Outernet morfeus_tool not found ! "
+    echo "Trying to download armv7 version (raspberry Pi)"
+    wget -O morfeus_tool  https://archive.outernet.is/morfeus_tool_v1.6/morfeus_tool_linux_armv7
+    ###t Tricks 
+    chown pi:pi $morf_tool_path/morfeus_tool
+    chmod +x $morf_tool_path/morfeus_tool
+    chmod +x $morf_tool_path/*.sh
+    apt-get install -y yad bc socat
+fi
+
 
 ####### GQRX settings - GRQX_ENABLE=0 to avoid 'connection refused' messages
 export GQRX_ENABLE=1
