@@ -2,12 +2,11 @@
 
 A simple tool to control your moRFeus device from your Linux-computer or Raspberry Pi
 
-Note : a specific file [RPi_moRFeus.sh](https://github.com/LamaBleu/moRFeus_GUI/RPi_moRFeus.sh) for **Raspberry Pi** is now available for download.
-
-Designed only for moRFeus (RF mixer/generator made by Outernet).  
+Designed only for moRFeus device (RF mixer/generator made by Outernet).  
 Product informations : https://outernet.is/pages/morfeus   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 Code is very crude, with no error checking. Feel free to use it, improve it. 
+
 
 Installation  
 ============
@@ -16,11 +15,10 @@ Installation
  
  Installation is now really easy (assuming for user:'pi' otherwise adjust $morf_tool_path variable): 
  
- 
-`git clone https://github.com/LamaBleu/moRFeus_GUI`  
-`cd moRFeus_GUI`  
-`chmod +x *.sh`  
-`gksudo ./RPi_moRFeus.sh`  
+  `git clone https://github.com/LamaBleu/moRFeus_GUI`  
+  `cd moRFeus_GUI`  
+  `chmod +x *.sh`  
+  `gksudo ./RPi_moRFeus.sh`  
   
 NOTE : it's important to use 'gksudo', not 'sudo'. 
 'sudo' command will work only on local console (HDMI port). 'gksudo' wiil work locally and remotely (through VNC ou RDP access)  
@@ -32,23 +30,28 @@ Raspberry Pi screenshots (Stretch) : [Install at first launch](https://imgur.com
 
 #### Linux
 
-* As pre-requisite you have to install yad ,socat and bc packages  
+Note : the script will now detect if Outernet morfeus-tool executable is present at right location. If missing, a message is displayed,
+and it's also a nice opportunity for the script to install "yad" "bc" "and" "socat" packages if not yet done.  
 
+* As pre-requisite you have to install yad ,socat and bc packages  
      sudo apt-get install yad socat bc  
      
-* Download and copy this script into a directory.  
+* Download and copy this script into a directory :
+   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
+   `cd moRFeus_GUI`    
+ 
 * Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
 - Choose the right version, adapted to your platform.  (Linux-32 & 64b, ARM)    
 - Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
-- Make all files executable (cd to directory then 'chmod +x *'). No need to change files owner. 
- 
-
+- Make  files executable (cd to directory ). No need to change files owner. 
+   `chmod +x *.sh` 
+   `chmod +x morfeus_tool` 
+   
 !!!!!! IMPORTANT !!!!!!  
-You need to be root to communicate with the device, launch the UI typing from shell :   
+As you need to be root to communicate with the device, launch the UI typing from shell :   
   " sudo <directory_path>/GUI_moRFeus.sh"  
 
- Again do not forget to rename the executable to 'morfeus_tool'  
-
+ 
 Usage  
 =====
 
@@ -65,7 +68,6 @@ Step generator
 ==============
 
 ![image](https://user-images.githubusercontent.com/26578895/38948007-aca71f4e-433e-11e8-9bfe-714a17975774.png)
-
 
 
 The best is to have a look at this other screenshot first : https://imgur.com/6RdO9LO   
