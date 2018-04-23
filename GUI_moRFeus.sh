@@ -5,20 +5,24 @@
 #
 #
 # INSTALLATION
-# ============
-# As pre-requisite you have to install yad and socat packages (sudo apt-get install yad socat)
-# Download and copy this script into a directory.
-# Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/
-#      Choose the right version, adapted to your platform.  (Linux-32 & 64b, ARM)
-#      Copy the tool to the same directory. RENAME it 'morfeus_tool' ! 
-#      Make all files executable (cd to directory then 'chmod +x *'). No need to change files owner. 
-# 
-
-#  !!!!!! IMPORTANT !!!!!!
+# ========================
+#
+#
+#    git clone https://github.com/LamaBleu/moRFeus_GUI
+#    cd moRFeus_GUI
+#    chmod +x *.sh
+#    
+#
+# Download Linux morfeus_tool (32 or 64bits) executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/
+# Copy the tool to moRFeus_GUI directory
+# Make file executable : "chmod +x morfeus_tool"
+#
+#
 # As you need to be root to communicate with the device, launch the UI typing from shell : 
+#
 #  " sudo <directory_path>/GUI_moRFeus.sh"
 
-# Again do not forget to rename the executable to 'morfeus_tool'
+
 
 
 # GQRX support
@@ -43,22 +47,47 @@
 # Try to listen the audio signal (CW mode) of the generator. Very stable and clean !
 #
 # Known bugs.
-# Lot ! The most annoying is pressing "Cancel3 button on the "step generator" window...
+# Lot ! The most annoying is pressing "Cancel button" on the step generator window...
 # Program runs a little bit slower with GQRX enableD. If you don't use GQRX you can disable the feature on this file.
 
 
 # Credits goes to Outernet and Alex OZ9AEC to give us so nice tools. Thanks !
-
-
-
-
 
 #  Path to moRFeus directory (to morfeus_tool and this script).
 ####### Adapt to real path if not working.
 #  Replacing $HOME by full name of directory may help
 export morf_tool_path=$HOME/moRFeus_GUI
 
-####### GQRX settings - GRQX_ENABLE=0 to avoid 'connection refused' messages
+chmod +x $morf_tool_path/morfeus_tool
+chmod +x $morf_tool_path/*.sh
+
+if [ ! -f $morf_tool_path/morfeus_tool ]; then
+    echo 
+    echo
+    echo
+    echo "#############################################"
+    echo
+    echo "Directory :" $morf_tool_path
+    echo "Outernet morfeus_tool not found ! "
+    echo
+    echo "#############################################"
+    echo
+    echo "Please download morfeus_tool from https://archive.outernet.is/morfeus_tool_v1.6/"
+    echo "according to your system (32bits or 64 bits)"
+    echo "rename the file morfeus_tool"
+    echo "and copy to $morf_tool_path"
+    echo
+    echo
+    echo "Just in case we will install NOW yad bc socat packages "
+    echo "(sudo apt-get install yad bc socat)"
+    echo
+    echo
+    apt-get install -y socat bc yad
+	exit 127
+fi
+
+
+####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
 export GQRX_ENABLE=1
 export GQRX_IP=127.0.0.1
 export GQRX_PORT=7356
@@ -131,14 +160,16 @@ export -f gqrx_lnb_reset
 
 
 function setfreq () {
-
 freq_morf=${status_freq::-4}
 freq_morf_a="${freq_morf/$'.'/}"
 
-INPUTTEXT=`yad --center --center --title="set Frequency" --form --text="  Now : $freq_morf" --field="Number:NUM" $freq_morf_a'\!85e6..5.4e9\!1000\!0 2>/dev/null'`  
+INPUTTEXT=`yad  --center --width=270 --title="set Frequency" --form --text="  Now : $freq_morf kHz" --field="Number:NUM" $freq_morf_a'\!85e6..5.4e9\!1000\!0 2>/dev/null'`  
 INPUTTEXT1=${INPUTTEXT%,*}
 
 $morf_tool_path/morfeus_tool setFrequency $INPUTTEXT1
+
+
+
 export freq_morf_a
 #export INPUTTEXT1
 close_exit
@@ -151,11 +182,11 @@ export -f setfreq
 function gqrx_get () {
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
-GQRX_FREQ=$(echo 'f ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none ) 
-GQRX_LNB=$(echo 'LNB_LO ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none )
+GQRX_FREQ=$(echo 'f ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
+GQRX_LNB=$(echo 'LNB_LO ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
 #echo "GQRX VFO: $GQRX_FREQ   LNB LO: $GQRX_LNB"
-#else 
-#echo "GQRX disabled"
+else 
+echo "GQRX disabled"
 fi
 export GQRX_FREQ
 export GQRX_LNB
@@ -165,11 +196,13 @@ export -f gqrx_get
 
 
 function setcurrent () {
-INPUTTEXT=`yad --center --title="set Power" --form --field="Power:CB" $status_current'!0!1!2!3!4!5!6!7' 2>/dev/null`  
+
+INPUTTEXT=`yad --center --width=250 --title="set Power" --form --field="Power:CB" $status_current'!0!1!2!3!4!5!6!7' 2>/dev/null`  
 INPUTTEXT1=${INPUTTEXT%,3*}
 #echo "setCurrent : "$INPUTTEXT1"  , "
 status_current = INPUTTEXT1
 $morf_tool_path/morfeus_tool setCurrent $INPUTTEXT1
+
 export status_current
 close_exit
 
@@ -177,6 +210,7 @@ close_exit
 export -f setcurrent
 
 function setmixer () {
+
 $morf_tool_path/morfeus_tool setCurrent 0
 $morf_tool_path/morfeus_tool Mixer 
 
@@ -186,6 +220,7 @@ close_exit
 export -f setmixer
 
 function setgenerator () {
+
 $morf_tool_path/morfeus_tool Generator 
 
 close_exit
@@ -197,7 +232,7 @@ export -f setgenerator
 function mainmenu () {
 
 ######### get status
-export morf_tool
+#export morf_tool
 status_mode=$($morf_tool_path/morfeus_tool getFunction)
 status_current=$($morf_tool_path/morfeus_tool getCurrent)
 status_freq=$($morf_tool_path/morfeus_tool getFrequency)
@@ -206,9 +241,12 @@ freq_morf_a="${freq_morf/$'.'/}"
 export status_freq
 export status_current
 export freq_morf_a
+
 gqrx_get
 
 ####### main GUI window
+
+
 
 data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=" moRFeus control \n by LamaBleu 04/2018 \n" \
 --form --field=Freq:RO "$status_freq" --field="Mode:RO" "$status_mode" --field="Power:RO"  "$status_current"  \
@@ -220,19 +258,21 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 --field='GQRX Freq':RO "VFO: $GQRX_FREQ    LNB LO: $GQRX_LNB " \
 --field="Morfeus/Gen. + Freq --> GQRX (VFO):FBTN" "bash -c gqrx_vfo_send" \
 --field="Morfeus/Mixer + Freq --> GQRX (LNB LO):FBTN" "bash -c gqrx_lnb_send" \
---field="Reset GQRX LNB LO to 0:FBTN" "bash -c gqrx_lnb_reset" \ "" "" "" "" "" "" "" "" "" ""  \
+--field="Reset GQRX LNB LO to 0:FBTN" "bash -c gqrx_lnb_reset" "" "" "" "" "" "" "" "" "" ""  \
 --button="Step generator:3"  --button="Refresh:0" --button="Quit:1" 2>/dev/null)"  
 
 
-
+#echo " gqrx_enable : "$GQRX_ENABLE
 ret=$?
+
+### for debug
 #echo $ret
-export ret
-
-if [[ $ret -eq 0 ]]; then
-	GQRX_LNB=0
-
-fi
+#export ret
+#echo $data
+#if [[ $ret -eq 0 ]]; then
+#	GQRX_LNB=0
+#	echo ""
+#fi
 
 
 
@@ -258,13 +298,14 @@ stepper_step_in=10000
 stepper_hop=5.000000
 stepper_hop1=5
 stepper="No"
-
+stepper_step="10000"
 stepper_start=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop_int=$freq_morf_a
 #$morf_tool_path/morfeus_tool setCurrent 1
 ############
-stepper="$(yad  --center --title="start Frequency" --form --text="  Now : $freq_morf" \
+
+stepper="$(yad  --center --width=320 --title="start Frequency" --form --text="  Now : $freq_morf kHz" \
 --field="Start_freq:NUM" $freq_morf_a'\!85e6..5.4e9\!100000\!0' \
 --field="Stop_freq:NUM" $freq_morf_a'\!85e6..5.4e9\!100000\!0' \
 --field="Step Hz:NUM" $stepper_step_int'\!0..1e9\!10000\!0' \
@@ -272,14 +313,12 @@ stepper="$(yad  --center --title="start Frequency" --form --text="  Now : $freq_
 --field="Power:CB" $status_current'\!0!1!2!3!4!5!6!7' \
 --field="Send Freq to GQRX:CB" $GQRX_STEP'\!No!VFO!LNB_LO'  "" "" "" "" "" "" 2>/dev/null) "
 
-#before:
-#--field="Power:CB" $status_current'\!0!1!2!3!4!5!6!7' \
 
 
 #ret_step=$?
 #echo "ret_step "$ret_step
 #export ret_step
-### to do : check if f_start > f_end
+
 stepper_start=$(echo $(echo $(echo "$stepper" | cut -d\| -f 1)))
 stepper_stop=$(echo $(echo $(echo "$stepper" | cut -d\| -f 2)))
 stepper_step=$(echo $(echo $(echo "$stepper" | cut -d\| -f 3)))
@@ -287,15 +326,16 @@ stepper_hop=$(echo $(echo $(echo "$stepper" | cut -d\| -f 4)))
 stepper_current=$(echo $(echo $(echo "$stepper" | cut -d\| -f 5)))
 GQRX_STEP=$(echo $(echo $(echo "$stepper" | cut -d\| -f 6)))
 
-
-
+stepper_start="${stepper_start//,/$'.'}"
+stepper_stop="${stepper_stop//,/$'.'}"
+stepper_hop_step="${stepper_step//,/$'.'}"
 stepper_hop_dec="${stepper_hop//,/$'.'}"
 stepper_hop="${stepper_hop_dec::-5}"
 #echo "stepper_hop1 ${stepper_hop1//,/$'.'}"
 #echo "Stepper:" $stepper_hop1 "--"   $stepper_hop_dec "--" $stepper_hop
-stepper_start_in=$(($stepper_start))
-stepper_stop_in=$(($stepper_stop))
-stepper_step_in=$(($stepper_step))
+#stepper_start_in=$(($stepper_start))
+#stepper_stop_in=$(($stepper_stop))
+#stepper_step_in=$(($stepper_step))
 
 stepper_start_int="${stepper_start::-7}"
 stepper_stop_int="${stepper_stop::-7}"
@@ -304,71 +344,87 @@ stepper_step_int="${stepper_step::-7}"
 
 i=$((stepper_start_int))
 end=$(($stepper_stop_int))
+band=$(((end-i)/stepper_step_int))
+band=${band#-}
 
 #test if f_start > f_end, then launch decremental stepper
 # and swap f_tart f_end variables
 
-if [[ "$stepper_start_int" > "$stepper_stop_int" ]] ; then
-	echo "*** Decremental steps !"	
-	stepper_step_int=-${stepper_step_int}
-	#swap f_end <->f_start	
-	end=$((stepper_start_int))
-	i=$(($stepper_stop_int))
-	#echo "start stop" $stepper_start_int $stepper_stop_int
-else
-echo "*** Incremental steps !"
-
-fi
-i=$((stepper_start_int))
-end=$(($stepper_stop_int))
-band=$(((end-i)/stepper_step_int))
-
-
-echo "Fstart: "$stepper_start_int " Fend: " $stepper_stop_int " Step Hz: "$stepper_step_int "Hop-time: "$stepper_hop \
+echo "Fstart: "$i " Fend: " $end " Step Hz: "$stepper_step_int "Hop-time: "$stepper_hop \
 "Jumps: "$band "  Power : "$stepper_current "  GQRX : "$GQRX_STEP
 
 # we need to switch to generator mode, and minimal power.
 $morf_tool_path/morfeus_tool Generator
 $morf_tool_path/morfeus_tool setCurrent $stepper_current
 
-if [[ $GQRX_STEP = "VFO" ]]; then
-	#scanning start : setting GQRX LNB_LO to 0, to ensure display on correct VFO freq.	
-	echo "gqrx lnb_lo reset"
-	echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT	
-	
+
+if [[ $GQRX_ENABLE -eq 1 ]];
+   then
+	if [[ $GQRX_STEP = "VFO" ]]; then
+		#scanning start : setting GQRX LNB_LO to 0, to ensure display on correct VFO freq.
+		echo "gqrx lnb_lo reset"
+		echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
+	fi
 fi
 k=0
 
 
-while [ $k -ne $band ]; do	
 
-$morf_tool_path/morfeus_tool setFrequency $i  
+
+if [[ "$stepper_start_int" > "$stepper_stop_int" ]] ; then
+	echo "*** Decremental steps !"	
+	stepper_step_int=-${stepper_step_int}
+	#swap f_end <->f_start	
+	#end=$((stepper_start_int))
+	#i=$(($stepper_stop_int))
+	
+	else
+
+	echo "*** Incremental steps !"
+	i=$((stepper_start_int))
+	end=$(($stepper_stop_int))
+
+fi
+
+
+band=$((band+1))
+
+i=$((stepper_start_int))
+	end=$(($stepper_stop_int))
+
+
+while [ $k -ne $band ]; do
+
+$morf_tool_path/morfeus_tool setFrequency $i
+if [[ $GQRX_ENABLE -eq 1 ]];
+   then
    if [[ $GQRX_STEP = "LNB_LO" ]]; then
       #send to LNB_LO
       #echo "GQRX LNB_LO:  " $i
-      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
-      
-   fi  
- 	 
+      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
+   fi
+
    if [[ $GQRX_STEP = "VFO" ]]; then
       #send to VFO
       #echo "GQRX VFO:  " $i
-      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT      
+      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
    fi  
-
+fi
 k=$((k+1))
 
 echo "Freq: "$i" - GQRX: "$GQRX_STEP" - Jump "$k"/"$band
+
 i=$(($i+$stepper_step_int))
+#echo $i
 sleep $stepper_hop
 
 done
 echo "Stepper end.    "
 sleep 0.5
 
-mainmenu
-fi
 
+fi
+#mainmenu
 }
 
 
@@ -378,9 +434,9 @@ main() {
 #!/bin/bash
 while :
 do
-mainmenu
 #echo $ret
 
+mainmenu
 if [[ $ret -eq 1 ]];
    then
 	echo "Normal exit"	
@@ -396,7 +452,9 @@ if [[ $ret -eq 252 ]];
 	echo "User cancel"
 	break       	   #Abandon the loop. (close mainwindow)
    fi
-done  
+
+done 
+ 
 }
 
 export -f mainmenu
