@@ -55,8 +55,14 @@
 
 #############
 ##########    Raspberry Pi specific : https://unix.stackexchange.com/a/118826
-export XAUTHORITY=~/.Xauthority 
+# To add to /home/pi/.bashrc :
+#export XAUTHORITY=~/.Xauthority 
 
+
+######################
+# remote access RDP : xhost
+#xhost +
+#export DISPLAY=:10.0
 #############
 
 #  Path to moRFeus directory (to morfeus_tool and this script).
@@ -76,7 +82,7 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
 fi
 
 
-####### GQRX settings - GRQX_ENABLE=0 to avoid 'connection refused' messages
+####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
 export GQRX_ENABLE=1
 export GQRX_IP=127.0.0.1
 export GQRX_PORT=7356
@@ -247,15 +253,17 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 --field='GQRX Freq':RO "VFO: $GQRX_FREQ    LNB LO: $GQRX_LNB " \
 --field="Morfeus/Gen. + Freq --> GQRX (VFO):FBTN" "bash -c gqrx_vfo_send" \
 --field="Morfeus/Mixer + Freq --> GQRX (LNB LO):FBTN" "bash -c gqrx_lnb_send" \
---field="Reset GQRX LNB LO to 0:FBTN" "bash -c gqrx_lnb_reset" \ "" "" "" "" "" "" "" "" "" ""  \
+--field="Reset GQRX LNB LO to 0:FBTN" "bash -c gqrx_lnb_reset" "" "" "" "" "" "" "" "" "" ""  \
 --button="Step generator:3"  --button="Refresh:0" --button="Quit:1" 2>/dev/null)"  
 
-#echo $data
+
 #echo " gqrx_enable : "$GQRX_ENABLE
 ret=$?
-#echo $ret
-export ret
 
+### for debug
+#echo $ret
+#export ret
+#echo $data
 #if [[ $ret -eq 0 ]]; then
 #	GQRX_LNB=0
 #	echo ""
@@ -285,7 +293,7 @@ stepper_step_in=10000
 stepper_hop=5.000000
 stepper_hop1=5
 stepper="No"
-
+stepper_step="10000"
 stepper_start=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop_int=$freq_morf_a
@@ -305,7 +313,7 @@ stepper="$(yad  --center --width=320 --title="start Frequency" --form --text="  
 #ret_step=$?
 #echo "ret_step "$ret_step
 #export ret_step
-### to do : check if f_start > f_end
+
 stepper_start=$(echo $(echo $(echo "$stepper" | cut -d\| -f 1)))
 stepper_stop=$(echo $(echo $(echo "$stepper" | cut -d\| -f 2)))
 stepper_step=$(echo $(echo $(echo "$stepper" | cut -d\| -f 3)))
@@ -342,7 +350,7 @@ echo "*** Incremental steps !"
 fi
 i=$((stepper_start))
 end=$(($stepper_stop))
-band=$((((end-i)/stepper_step)+1))
+band=$(((($((end))-$((i)))/($((stepper_step))+1))))
 
 
 echo "Fstart: "$stepper_start " Fend: " $stepper_stop " Step Hz: "$stepper_step_int "Hop-time: "$stepper_hop \
@@ -390,9 +398,9 @@ done
 echo "Stepper end.    "
 sleep 0.5
 
-mainmenu
-fi
 
+fi
+#mainmenu
 }
 
 
@@ -402,9 +410,9 @@ main() {
 #!/bin/bash
 while :
 do
-mainmenu
 #echo $ret
 
+mainmenu
 if [[ $ret -eq 1 ]];
    then
 	echo "Normal exit"	
@@ -420,7 +428,9 @@ if [[ $ret -eq 252 ]];
 	echo "User cancel"
 	break       	   #Abandon the loop. (close mainwindow)
    fi
-done  
+
+done 
+ 
 }
 
 export -f mainmenu
