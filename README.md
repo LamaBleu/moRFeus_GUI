@@ -43,13 +43,13 @@ and it's also a nice opportunity for the script to install "yad" "bc" "and" "soc
 * Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
 - Choose the right version, adapted to your platform.  (Linux- 32 or 64bits)    
 - Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
-- Make  files executable (cd to directory ). No need to change files owner. 
-   `chmod +x *.sh` 
-   `chmod +x morfeus_tool` 
+- Make  files executable (cd to directory ). No need to change files owner.  
+`chmod +x *.sh`  
+`chmod +x morfeus_tool`  
    
 !!!!!! IMPORTANT !!!!!!  
 As you need to be root to communicate with the device, launch the UI typing from shell :   
-  `sudo ./GUI_moRFeus.sh`  
+       `sudo ./GUI_moRFeus.sh`  
 
  
 Usage  
