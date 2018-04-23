@@ -23,9 +23,9 @@ Installation
 NOTE : it's important to use 'gksudo', not 'sudo'. 
 'sudo' command will work only on local console (HDMI port). 'gksudo' wiil work locally and remotely (through VNC ou RDP access)  
   
-The script will download Outernet morfeus_tool executable, then install 'yad' bc' and 'socat' packages.
-Outernet device has to be connected to use the program.
-
+The script will download Outernet morfeus_tool executable, then install 'yad' bc' and 'socat' packages.  
+Outernet moRFeus device has to be connected to the RPi to run the program!  
+  
 Raspberry Pi screenshots (Stretch) : [Install at first launch](https://imgur.com/2Qbmq5h) , and Rpi-moRFeus [connected to GQRX](https://imgur.com/ACr0HGj)
 
 #### Linux
