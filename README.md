@@ -14,15 +14,17 @@ Installation
 
  #### Raspberry Pi
  
- Installation is now really easy : 
+ Installation is now really easy (assuming for user:'pi' otherwise adjust $morf_tool_path variable): 
  
  
 `git clone https://github.com/LamaBleu/moRFeus_GUI`  
 `cd moRFeus_GUI`  
 `chmod +x *.sh`  
-`sudo ./RPi_moRFeus.sh`  
+`gksudo ./RPi_moRFeus.sh`  
   
-
+NOTE : it's important to use 'gksudo', not 'sudo'. 
+'sudo' command will work only on local console (HDMI port). 'gksudo' wiil work locally and remotely (through VNC ou RDP access)  
+  
 The script will download Outernet morfeus_tool executable, then install 'yad' bc' and 'socat' packages.
 Outernet device has to be connected to use the program.
 
