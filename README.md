@@ -59,7 +59,6 @@ At launch actual moRFeus settings are collected and displayed on the first three
 
 ![image](https://user-images.githubusercontent.com/26578895/38947869-5274aa46-433e-11e8-8e76-18c5039fda80.png)
 
-- from shell 'cd' to GUI_moRFeus directory, type 'sudo ./GUI_moRFeus'  
 
 The main GUI window is intuitive, each button describing the performed function.  
 Nothing else to say.  
