@@ -36,7 +36,7 @@ and it's also a nice opportunity for the script to install "yad" "bc" "and" "soc
 * As pre-requisite you have to install yad ,socat and bc packages  
      sudo apt-get install yad socat bc  
      
-* Download and copy this script into a directory :
+* Download and copy this script into a directory :  
    `git clone https://github.com/LamaBleu/moRFeus_GUI`  
    `cd moRFeus_GUI`    
  
@@ -49,7 +49,7 @@ and it's also a nice opportunity for the script to install "yad" "bc" "and" "soc
    
 !!!!!! IMPORTANT !!!!!!  
 As you need to be root to communicate with the device, launch the UI typing from shell :   
-  " sudo <directory_path>/GUI_moRFeus.sh"  
+  `sudo ./GUI_moRFeus.sh`  
 
  
 Usage  
