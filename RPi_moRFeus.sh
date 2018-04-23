@@ -71,10 +71,13 @@
 export morf_tool_path=/home/pi/moRFeus_GUI
 
 if [ ! -f $morf_tool_path/morfeus_tool ]; then
+    echo
+    echo
+    echo "Directory : " $morf_tool_path
     echo "Outernet morfeus_tool not found ! "
     echo "Trying to download armv7 version (raspberry Pi)"
-    wget -O morfeus_tool  https://archive.outernet.is/morfeus_tool_v1.6/morfeus_tool_linux_armv7
-    ###t Tricks 
+    wget -O $morf_tool_path/morfeus_tool  https://archive.outernet.is/morfeus_tool_v1.6/morfeus_tool_linux_armv7
+    ### Tricks 
     chown pi:pi $morf_tool_path/morfeus_tool
     chmod +x $morf_tool_path/morfeus_tool
     chmod +x $morf_tool_path/*.sh
@@ -323,42 +326,46 @@ GQRX_STEP=$(echo $(echo $(echo "$stepper" | cut -d\| -f 6)))
 
 
 #echo $stepper
-stepper_hop_dec="${stepper_hop//,/$'.'}"
-#stepper_hop="${stepper_hop_dec::-5}"
-stepper_hop=$stepper_hop_dec
-stepper_start_in=$(($stepper_start))
-stepper_stop_in=$(($stepper_stop))
-stepper_step_in=$(($stepper_step))
+stepper_start="${stepper_start//,/$'.'}"
+stepper_stop="${stepper_stop//,/$'.'}"
+stepper_step="${stepper_step//,/$'.'}"
+stepper_hop="${stepper_hop//,/$'.'}"
+#stepper_hop=${stepper_hop_dec::-5}
+#echo "stepper_hop1 ${stepper_hop1//,/$'.'}"
+#echo "Stepper:" $stepper_hop1 "--"   $stepper_hop_dec "--" $stepper_hop
+#stepper_start_in=$(($stepper_start))
+#stepper_stop_in=$(($stepper_stop))
+#stepper_step_in=$(($stepper_step))
+stepper_step_int=stepper_step
+stepper_start_int=stepper_start
+stepper_stop_int=stepper_stop
+
+# or
+#stepper_start_int="${stepper_start::-7}"
+#stepper_stop_int="${stepper_stop::-7}"
+#stepper_step_int="${stepper_step::-7}"
+#echo $stepper_start ${stepper_start::-7}
 
 
-i=$stepper_start
-end=$stepper_stop
 
+i=$((stepper_start_int))
+end=$(($stepper_stop_int))
+band=$(((end-i)/stepper_step_int))
+band=${band#-}
+
+echo $i $end $band
 #test if f_start > f_end, then launch decremental stepper
-# and swap f_start f_end variables
+# and swap f_tart f_end variables
 
-if [[ "$stepper_start" > "$stepper_stop" ]] ; then
-	echo "*** Decremental steps !"	
-	stepper_step=-${stepper_step}
-	#swap f_end <->f_start
-	end=$((stepper_start))
-	i=$(($stepper_stop))
-	#echo "start stop" $stepper_start_int $stepper_stop_int
-else
-echo "*** Incremental steps !"
-
-fi
-i=$((stepper_start))
-end=$(($stepper_stop))
-band=$(((($((end))-$((i)))/($((stepper_step))+1))))
-
-
-echo "Fstart: "$stepper_start " Fend: " $stepper_stop " Step Hz: "$stepper_step_int "Hop-time: "$stepper_hop \
+echo "Fstart: "$i " Fend: " $end " Step Hz: "$stepper_step "Hop-time: "$stepper_hop \
 "Jumps: "$band "  Power : "$stepper_current "  GQRX : "$GQRX_STEP
+
 
 # we need to switch to generator mode, and minimal power.
 $morf_tool_path/morfeus_tool Generator
 $morf_tool_path/morfeus_tool setCurrent $stepper_current
+
+
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
 	if [[ $GQRX_STEP = "VFO" ]]; then
@@ -368,6 +375,29 @@ if [[ $GQRX_ENABLE -eq 1 ]];
 	fi
 fi
 k=0
+
+
+
+if [[ "$i" > "$end" ]] ; then
+	echo "*** Decremental steps !"	
+	stepper_step_int=-${stepper_step_int}
+	#swap f_end <->f_start	
+	#end=$((stepper_start_int))
+	#i=$(($stepper_stop_int))
+	
+	else
+
+	echo "*** Incremental steps !"
+	i=$((stepper_start_int))
+	end=$(($stepper_stop_int))
+
+fi
+
+
+band=$((band+1))
+
+i=$((stepper_start_int))
+end=$(($stepper_stop_int))
 
 
 while [ $k -ne $band ]; do
@@ -391,7 +421,8 @@ k=$((k+1))
 
 echo "Freq: "$i" - GQRX: "$GQRX_STEP" - Jump "$k"/"$band
 
-i=$(($i+$stepper_step))
+i=$(($i+$stepper_step_int))
+#echo $i
 sleep $stepper_hop
 
 done
