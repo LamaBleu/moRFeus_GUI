@@ -41,7 +41,7 @@ and it's also a nice opportunity for the script to install "yad" "bc" "and" "soc
    `cd moRFeus_GUI`    
  
 * Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
-- Choose the right version, adapted to your platform.  (Linux-32 & 64b, ARM)    
+- Choose the right version, adapted to your platform.  (Linux- 32 or 64bits)    
 - Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
 - Make  files executable (cd to directory ). No need to change files owner. 
    `chmod +x *.sh` 
