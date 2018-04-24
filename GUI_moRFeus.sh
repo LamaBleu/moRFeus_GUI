@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# GUI for moRFeus (Outernet) tool
+# GUI for moRFeus (Outernet) tool with GQRX support.
 # for moRFeus device v1.6 - LamaBleu 04/2018
 #
 #
@@ -11,60 +11,30 @@
 #    git clone https://github.com/LamaBleu/moRFeus_GUI
 #    cd moRFeus_GUI
 #    chmod +x *.sh
-#    
+#    sudo ./GUI_moRFeus.sh
 #
-# Download Linux morfeus_tool (32 or 64bits) executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/
-# Copy the tool to moRFeus_GUI directory
-# Make file executable : "chmod +x morfeus_tool"
+# At first launch the script will ask you which version (32 or 64 bits) to download
+# from Outernet website archives.
+# If missing, packages 'yad' 'bc' and 'socat' are also installed.
+#
+# GUI will not launch if moRFeus device is not connected !
 #
 #
-# As you need to be root to communicate with the device, launch the UI typing from shell : 
-#
-#  " sudo <directory_path>/GUI_moRFeus.sh"
-
-
-
-
-# GQRX support
-# ============
-# Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous work ;) )
-# Adapt parameters in this file to GQRX settings (should be OK by default)
-# From the main window, you can :
-#	- read actual  VFO and LNB_LO values.
-#	- transfer the moRFeus freq to the GQRX VFO (generator mode, listen moRFeus signal)
-#	- tranfer the moRFeus freq to GQRX LNB_LO (moRFeus mixer mode). The frequency displayed by
-#	- reset GQRX LNB_LO freq. to 0 
-#	  GQRX is now the real frequency (mixer + GQRX VFO)
-# From the step generator menu, you can send the moRFeus frequency to GQRX, and so follow the signal. Cool!
-
-
-# Step Generator
-# ==============
-# Useful to follow the moRFeus signal in stepper mode from GQRX
-# Power can be set.
-# Steps can be negative (decremental steps) if F-start > F-end
-# Sending freq to GQRX/VFO allow you to follow the signal in GQRX during the stepping-sequence. 
-# Try to listen the audio signal (CW mode) of the generator. Very stable and clean !
-#
-# Known bugs.
-# Lot ! The most annoying is pressing "Cancel button" on the step generator window...
-# Program runs a little bit slower with GQRX enableD. If you don't use GQRX you can disable the feature on this file.
-
-
 # Credits goes to Outernet and Alex OZ9AEC to give us so nice tools. Thanks !
+
+
 
 #  Path to moRFeus directory (to morfeus_tool and this script).
 ####### Adapt to real path if not working.
 #  Replacing $HOME by full name of directory may help
+
 export morf_tool_path=$HOME/moRFeus_GUI
 
-chmod +x $morf_tool_path/morfeus_tool
-chmod +x $morf_tool_path/*.sh
 
 if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo 
     echo
-    echo
+    printf "\n\n\n"
     echo "#############################################"
     echo
     echo "Directory :" $morf_tool_path
@@ -72,19 +42,39 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo
     echo "#############################################"
     echo
-    echo "Please download morfeus_tool from https://archive.outernet.is/morfeus_tool_v1.6/"
-    echo "according to your system (32bits or 64 bits)"
-    echo "rename the file morfeus_tool"
-    echo "and copy to $morf_tool_path"
+    printf "\n\n\n"
+    echo "Trying to download from Outernet website"
+    echo
+    printf "\n\n\n"
+    read -p "Choose OS Type 32 or 64 bits [32]: " OS
+    OS=${OS:-32}
+    echo
+    echo
+    echo "Going to download for $OS bits platform"
+    if [[ $OS -eq 32 ]] ||  [[ $OS -eq 64 ]];
+      then
+        wget -O $morf_tool_path/morfeus_tool https://archive.outernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x$OS
+	userdir=$(ls -l $HOME/moRFeus_GUI/GUI_moRFeus.sh | awk '{print $3}')
+	echo
+	echo "Modify morfeus_tool ownership to $userdir"
+	chown $userdir:$userdir $HOME/moRFeus_GUI/morfeus_tool
+      else
+       echo 
+       echo "Huuuhhhh , NO SORRY ! 32 ou 64 only ! (or manual download : https://archive.outernet.is/morfeus_tool_v1.6/ )"
+    fi
+    printf "\n\n\n" 
+    printf "\n\n\n"
     echo
     echo
     echo "Just in case we will install NOW yad bc socat packages "
     echo "(sudo apt-get install yad bc socat)"
     echo
-    echo
+    printf "\n\n\n"
     apt-get install -y socat bc yad
-	exit 127
 fi
+
+chmod +x $morf_tool_path/morfeus_tool
+chmod +x $morf_tool_path/*.sh
 
 
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
@@ -182,11 +172,11 @@ export -f setfreq
 function gqrx_get () {
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
-GQRX_FREQ=$(echo 'f ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
-GQRX_LNB=$(echo 'LNB_LO ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
-#echo "GQRX VFO: $GQRX_FREQ   LNB LO: $GQRX_LNB"
-else 
-echo "GQRX disabled"
+     GQRX_FREQ=$(echo 'f ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
+     GQRX_LNB=$(echo 'LNB_LO ' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
+     #echo "GQRX VFO: $GQRX_FREQ   LNB LO: $GQRX_LNB"
+   else 
+      echo "GQRX disabled"
 fi
 export GQRX_FREQ
 export GQRX_LNB
@@ -236,7 +226,7 @@ function mainmenu () {
 status_mode=$($morf_tool_path/morfeus_tool getFunction)
 status_current=$($morf_tool_path/morfeus_tool getCurrent)
 status_freq=$($morf_tool_path/morfeus_tool getFrequency)
-freq_morf=${status_freq::-4}
+#freq_morf=${status_freq::-4}
 freq_morf_a="${freq_morf/$'.'/}"
 export status_freq
 export status_current
@@ -295,9 +285,10 @@ stepper_step=10000
 stepper_start_in=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop_in=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_step_in=10000
-stepper_hop=5.000000
+stepper_hop=5.00000
 stepper_hop1=5
 stepper="No"
+stepper_hop_dec=5.00000
 stepper_step="10000"
 stepper_start=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop=$(echo "$freq_morf_a + 0.000000" | bc)
@@ -311,7 +302,7 @@ stepper="$(yad  --center --width=320 --title="start Frequency" --form --text="  
 --field="Step Hz:NUM" $stepper_step_int'\!0..1e9\!10000\!0' \
 --field="Hop (s.):NUM" '5.\!0.5..3600\!0.5\!1' \
 --field="Power:CB" $status_current'\!0!1!2!3!4!5!6!7' \
---field="Send Freq to GQRX:CB" $GQRX_STEP'\!No!VFO!LNB_LO'  "" "" "" "" "" "" 2>/dev/null) "
+--field="Send Freq to GQRX:CB" $GQRX_STEP'\!No!VFO!LNB_LO'  "" "" "" "" "" "" ) "
 
 
 
@@ -328,7 +319,7 @@ GQRX_STEP=$(echo $(echo $(echo "$stepper" | cut -d\| -f 6)))
 
 stepper_start="${stepper_start//,/$'.'}"
 stepper_stop="${stepper_stop//,/$'.'}"
-stepper_hop_step="${stepper_step//,/$'.'}"
+stepper_step_dec="${stepper_step//,/$'.'}"
 stepper_hop_dec="${stepper_hop//,/$'.'}"
 stepper_hop="${stepper_hop_dec::-5}"
 #echo "stepper_hop1 ${stepper_hop1//,/$'.'}"
@@ -362,8 +353,7 @@ if [[ $GQRX_ENABLE -eq 1 ]];
    then
 	if [[ $GQRX_STEP = "VFO" ]]; then
 		#scanning start : setting GQRX LNB_LO to 0, to ensure display on correct VFO freq.
-		echo "gqrx lnb_lo reset"
-		echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
+		echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT
 	fi
 fi
 k=0
@@ -401,13 +391,13 @@ if [[ $GQRX_ENABLE -eq 1 ]];
    if [[ $GQRX_STEP = "LNB_LO" ]]; then
       #send to LNB_LO
       #echo "GQRX LNB_LO:  " $i
-      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
+      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
    fi
 
    if [[ $GQRX_STEP = "VFO" ]]; then
       #send to VFO
       #echo "GQRX VFO:  " $i
-      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
+      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
    fi  
 fi
 k=$((k+1))
@@ -444,7 +434,7 @@ if [[ $ret -eq 1 ]];
    fi
 if [[ $ret -eq 127 ]];
    then
-	echo "err 127"
+	echo "err 127 "
 	break       	   #Abandon the loop. (error)
 	fi
 if [[ $ret -eq 252 ]];
