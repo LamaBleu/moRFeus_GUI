@@ -30,26 +30,20 @@ Raspberry Pi screenshots (Stretch) : [Install at first launch](https://imgur.com
 
 #### Linux
 
-Note : the script will now detect if Outernet morfeus-tool executable is present at right location. If missing, a message is displayed,
-and it's also a nice opportunity for the script to install "yad" "bc" "and" "socat" packages if not yet done.  
+Automatic install :
 
-* As pre-requisite you have to install yad ,socat and bc packages  
-     sudo apt-get install yad socat bc  
-     
-* Download and copy this script into a directory :  
-   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
-   `cd moRFeus_GUI`    
- 
-* Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
-- Choose the right version, adapted to your platform.  (Linux- 32 or 64bits)    
-- Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
-- Make  files executable (cd to directory ). No need to change files owner.  
-`chmod +x *.sh`  
-`chmod +x morfeus_tool`  
-   
-!!!!!! IMPORTANT !!!!!!  
-As you need to be root to communicate with the device, launch the UI typing from shell :   
-       `sudo ./GUI_moRFeus.sh`  
+  `git clone https://github.com/LamaBleu/moRFeus_GUI`  
+  `cd moRFeus_GUI`  
+  `chmod +x *.sh`  
+  `sudo ./GUI_moRFeus.sh`  
+
+
+At first launch the script will try to download the morfeus_tool from Outernet website, then perform installation tasks.
+You will be asked to choose 32 or 64 bits version.
+
+
+
+
 
  
 Usage  
@@ -97,6 +91,30 @@ Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous 
 	  
  
  From the step generator menu, you can send the moRFeus frequency to GQRX, and so follow the signal. Cool!  
+
+
+
+#### Manual installation
+
+Just in case automatic install fails.
+
+* As pre-requisite you have to install yad ,socat and bc packages  
+     sudo apt-get install yad socat bc  
+     
+* Download and copy this script into a directory :  
+   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
+   `cd moRFeus_GUI`    
+ 
+* Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
+- Choose the right version, adapted to your platform.  (Linux- 32 or 64bits)    
+- Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
+- Make  files executable (cd to directory ). No need to change files owner.  
+`chmod +x *.sh`  
+`chmod +x morfeus_tool`  
+   
+!!!!!! IMPORTANT !!!!!!  
+As you need to be root to communicate with the device, launch the UI typing from shell :   
+       `sudo ./GUI_moRFeus.sh`  
 
 
 Known bugs.  
