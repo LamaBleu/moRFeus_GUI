@@ -1,0 +1,6 @@
+#!/bin/bash
+# This is a script which performs nothing !
+# It's just to replace official morfeus_tool for debug and preview. GQRX link should work.
+# Just rename it "morfeus_tool"
+test
+
