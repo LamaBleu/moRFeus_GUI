@@ -3,9 +3,17 @@
 A simple tool to control your moRFeus device from your Linux-computer or Raspberry Pi
 
 Designed only for moRFeus device (RF mixer/generator made by Outernet).  
-Product informations : https://outernet.is/pages/morfeus   
+Product informations : https://store.outernet.is/products/morfeus-1   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
-Code is very crude, with no error checking. Feel free to use it, improve it. 
+
+Code is very crude, with no error checking. Feel free to use it, improve it.  
+Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork (twitter), lama.bleu (gmail)
+
+UPDATE 11-jun-2018 :  
+network support for moRFeus here : https://github.com/LamaBleu/moRFeus_listener  
+moRFeus_listener is just a basic and minimalist interface to remotely/locally control moRFeus device from shell, telnet, or sending TCP frames (for scripting use).  
+moRFeus_GUI will probably migrate under moRFeus_listener environment.  
+
 
 
 Installation  
