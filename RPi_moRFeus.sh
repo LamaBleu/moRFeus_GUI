@@ -7,8 +7,8 @@
 # INSTALLATION (Raspberry PI3)
 # ========================
 
-#For Raspberry, installation is now automatic.
-#The script will download morfeus_tool from Outernet website, and check if packages 'yad' bc' and
+# For Raspberry, installation is now automatic.
+# The script will download morfeus_tool from Outernet website, and check if packages 'yad' bc' and
 # 'socat' are missing.
 #
 #    git clone https://github.com/LamaBleu/moRFeus_GUI
