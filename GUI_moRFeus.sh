@@ -358,16 +358,14 @@ if [[ $GQRX_ENABLE -eq 1 ]];
 fi
 k=0
 
-
-
-
-if [[ "$stepper_start_int" > "$stepper_stop_int" ]] ; then
-	echo "*** Decremental steps !"	
+if [[ "$i" > "$end" ]] ; then
+	echo "*** Decremental steps !"
+	#negative steps
 	stepper_step_int=-${stepper_step_int}
-	#swap f_end <->f_start	
-	#end=$((stepper_start_int))
-	#i=$(($stepper_stop_int))
-	
+	#swap f_end <->f_start
+	end=$((stepper_start_int))
+	i=$(($stepper_stop_int))
+
 	else
 
 	echo "*** Incremental steps !"
@@ -375,6 +373,7 @@ if [[ "$stepper_start_int" > "$stepper_stop_int" ]] ; then
 	end=$(($stepper_stop_int))
 
 fi
+
 
 
 band=$((band+1))
