@@ -105,7 +105,7 @@ export GQRX_PORT=7356
 
 export stepper_step_int=0
 export morf_tool
-#export GQRX_STEP="No"
+export GQRX_STEP="No"
 
 
 function on_click () {
