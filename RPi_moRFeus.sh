@@ -14,12 +14,12 @@
 #    git clone https://github.com/LamaBleu/moRFeus_GUI
 #    cd moRFeus_GUI
 #    chmod +x *.sh
-#    sudo ./RPi_moRFeus.sh
+#    gksudo ./RPi_moRFeus.sh
 
 
 #  !!!!!! IMPORTANT !!!!!!
 # As you need to be root to communicate with the device, launch the UI typing from shell : 
-#  " sudo <directory_path>/GUI_moRFeus.sh"
+#  " gksudo <directory_path>/GUI_moRFeus.sh"
 
 
 
@@ -27,28 +27,39 @@
 # GQRX support
 # ============
 # Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous work ;) )
-# Adapt parameters in this file to GQRX settings (should be OK by default)
+
+# Adapt parameters (IP,port) in this file to GQRX settings (should be OK by default)
+# Use GQRX_IP=127.0.0.1 for local use. Adapt GQRX_IP if GQRX running on a remote computer.
+
+
+# USAGE:
+# =====
 # From the main window, you can :
 #	- read actual  VFO and LNB_LO values.
 #	- transfer the moRFeus freq to the GQRX VFO (generator mode, listen moRFeus signal)
-#	- tranfer the moRFeus freq to GQRX LNB_LO (moRFeus mixer mode). The frequency displayed by
+#	- transfer the moRFeus freq to GQRX LNB_LO (moRFeus mixer mode), to display real frequency on GQRX when running mixer mode.
 #	- reset GQRX LNB_LO freq. to 0 
 #	  GQRX is now the real frequency (mixer + GQRX VFO)
-# From the step generator menu, you can send the moRFeus frequency to GQRX, and so follow the signal. Cool!
+# From the step generator menu, you can send the moRFeus frequency to GQRX or GQRX LNB_LO and so follow the signal. Cool!
 
 
-# Step Generator
-# ==============
+# Step Generator notes
+# ====================
 # Useful to follow the moRFeus signal in stepper mode from GQRX
-# Power can be set.
+# Power level (current) can be set.
 # Steps can be negative (decremental steps) if F-start > F-end
-# Sending freq to GQRX/VFO allow you to follow the signal in GQRX during the stepping-sequence. 
+# Sending freq to GQRX/VFO allow you to follow moRFeus RF signal from GQRX during the stepping-sequence. 
 # Try to listen the audio signal (CW mode) of the generator. Very stable and clean !
+# Using GQRX 'local or remote) : follow moRFeus steps, retrieve signal level and store values in CSV file.
+
+
 #
 # Known bugs.
 # Lot ! The most annoying is pressing "Cancel button" on the step generator window...
-# Program runs a little bit slower with GQRX enableD. If you don't use GQRX you can disable the feature on this file.
-
+# Program runs a little bit slower with GQRX enabled. If you don't use GQRX you can disable the feature on this file.
+#
+#
+#
 
 # Credits goes to Outernet and Alex OZ9AEC to give us so nice tools. Thanks !
 
@@ -84,8 +95,9 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     apt-get install -y yad bc socat
 fi
 
-
+#######
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
+#######
 export GQRX_ENABLE=1
 export GQRX_IP=127.0.0.1
 export GQRX_PORT=7356
@@ -93,7 +105,7 @@ export GQRX_PORT=7356
 
 export stepper_step_int=0
 export morf_tool
-export GQRX_STEP="No"
+#export GQRX_STEP="No"
 
 
 function on_click () {
@@ -155,6 +167,16 @@ close_exit
 export -f gqrx_lnb_reset
 
 
+function remote_morfeus_receive () {
+
+#read MESSAGE
+echo "TCP receive : " $MESSAGE
+$morf_tool_path/morfeus_tool setFrequency  $(($MESSAGE))
+
+
+}
+
+export -f remote_morfeus_receive
 
 
 function setfreq () {
@@ -197,7 +219,7 @@ function setcurrent () {
 
 INPUTTEXT=`yad --center --width=250 --title="set Power" --form --field="Power:CB" $status_current'!0!1!2!3!4!5!6!7' 2>/dev/null`  
 INPUTTEXT1=${INPUTTEXT%,3*}
-#echo "setCurrent : "$INPUTTEXT1"  , "
+
 status_current = INPUTTEXT1
 $morf_tool_path/morfeus_tool setCurrent $INPUTTEXT1
 
@@ -241,7 +263,7 @@ export status_current
 export freq_morf_a
 
 gqrx_get
-
+#socat -u tcp-l:7777,fork system:'read MESSAGE;$morf_tool_path/morfeus_tool setFrequency  $(($MESSAGE));echo "TCP receive : " $MESSAGE' &
 ####### main GUI window
 
 
@@ -252,7 +274,7 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 --field="set Generator mode:FBTN" "bash -c setgenerator" \
 --field="set Mixer mode:FBTN" "bash -c setmixer"  \
 --field="Set Power:FBTN" "bash -c setcurrent" --field=:LBL "" \
---field='GQRX control':RO "  IP: $GQRX_IP Port: $GQRX_PORT"  \
+--field='GQRX control':RO "  IP: $GQRX_IP   Port: $GQRX_PORT"  \
 --field='GQRX Freq':RO "VFO: $GQRX_FREQ    LNB LO: $GQRX_LNB " \
 --field="Morfeus/Gen. + Freq --> GQRX (VFO):FBTN" "bash -c gqrx_vfo_send" \
 --field="Morfeus/Mixer + Freq --> GQRX (LNB LO):FBTN" "bash -c gqrx_lnb_send" \
@@ -263,25 +285,16 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 #echo " gqrx_enable : "$GQRX_ENABLE
 ret=$?
 
-### for debug
-#echo $ret
-#export ret
-#echo $data
-#if [[ $ret -eq 0 ]]; then
-#	GQRX_LNB=0
-#	echo ""
-#fi
 
-
-
+#############
 ############# step generator
 
 
 if [[ $ret -eq 3 ]]; then
 
-# we need to switch to generator mode, and minimal power.
+# we need to switch to generator mode.
 $morf_tool_path/morfeus_tool Generator
-$morf_tool_path/morfeus_tool setCurrent 1
+#$morf_tool_path/morfeus_tool setCurrent 1
 
 #echo "Stepper init Fstart: "$stepper_start_int " Fend: " $stepper_stop_int " Step Hz:  "$stepper_step_int " Hope-time : "$stepper_hop_dec \
 #"Power : "$status_current "  GQRX : "$GQRX_STEP
@@ -330,32 +343,20 @@ stepper_start="${stepper_start//,/$'.'}"
 stepper_stop="${stepper_stop//,/$'.'}"
 stepper_step="${stepper_step//,/$'.'}"
 stepper_hop="${stepper_hop//,/$'.'}"
-#stepper_hop=${stepper_hop_dec::-5}
-#echo "stepper_hop1 ${stepper_hop1//,/$'.'}"
-#echo "Stepper:" $stepper_hop1 "--"   $stepper_hop_dec "--" $stepper_hop
-#stepper_start_in=$(($stepper_start))
-#stepper_stop_in=$(($stepper_stop))
-#stepper_step_in=$(($stepper_step))
+
 stepper_step_int=stepper_step
 stepper_start_int=stepper_start
 stepper_stop_int=stepper_stop
 
-# or
-#stepper_start_int="${stepper_start::-7}"
-#stepper_stop_int="${stepper_stop::-7}"
-#stepper_step_int="${stepper_step::-7}"
-#echo $stepper_start ${stepper_start::-7}
-
 
 
 i=$((stepper_start_int))
-end=$(($stepper_stop_int))
+end=$((stepper_stop_int))
 band=$(((end-i)/stepper_step_int))
 band=${band#-}
 
-echo $i $end $band
-#test if f_start > f_end, then launch decremental stepper
-# and swap f_tart f_end variables
+#echo $i $end $band
+
 
 echo "Fstart: "$i " Fend: " $end " Step Hz: "$stepper_step "Hop-time: "$stepper_hop \
 "Jumps: "$band "  Power : "$stepper_current "  GQRX : "$GQRX_STEP
@@ -376,15 +377,17 @@ if [[ $GQRX_ENABLE -eq 1 ]];
 fi
 k=0
 
-
+#test if f_start > f_end, then launch decremental stepper
+# and swap f_start f_end variables
 
 if [[ "$i" > "$end" ]] ; then
-	echo "*** Decremental steps !"	
+	echo "*** Decremental steps !"
+	#negative steps
 	stepper_step_int=-${stepper_step_int}
-	#swap f_end <->f_start	
-	#end=$((stepper_start_int))
-	#i=$(($stepper_stop_int))
-	
+	#swap f_end <->f_start
+	end=$((stepper_start_int))
+	i=$(($stepper_stop_int))
+
 	else
 
 	echo "*** Incremental steps !"
@@ -394,11 +397,14 @@ if [[ "$i" > "$end" ]] ; then
 fi
 
 
+# step numbers
 band=$((band+1))
 
 i=$((stepper_start_int))
 end=$(($stepper_stop_int))
 
+echo "# Fstart: $i  -  Fend:  $end -  step: $((stepper_step_int)) Hz" > file.csv
+echo "# Start : "$(date +%Y-%m-%d" "%H:%M:%S) >> file.csv
 
 while [ $k -ne $band ]; do
 
@@ -415,18 +421,30 @@ if [[ $GQRX_ENABLE -eq 1 ]];
       #send to VFO
       #echo "GQRX VFO:  " $i
       echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
-   fi  
+   fi
 fi
 k=$((k+1))
 
-echo "Freq: "$i" - GQRX: "$GQRX_STEP" - Jump "$k"/"$band
+sleep $stepper_hop
+# get signal level, thanks to @csete
+GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
+echo "Freq: $i - GQRX: $GQRX_STEP - Jump $k/$band   -  Level : $GQRX_LEVEL dB"
 
+# store freq,level values in csv file for future use (plot) :
+# same as https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
+# file compatible for use with rtl_power_fftw: https://github.com/AD-Vega/rtl-power-fftw/blob/master/doc/rtl_power_fftw.1.md
+
+echo "$i,$GQRX_LEVEL" >> file.csv
+
+#next freq step
 i=$(($i+$stepper_step_int))
 #echo $i
-sleep $stepper_hop
+
+
 
 done
 echo "Stepper end.    "
+echo "# End : "$(date +%Y-%m-%d" "%H:%M:%S) >> file.csv
 sleep 0.5
 
 
@@ -446,6 +464,7 @@ do
 mainmenu
 if [[ $ret -eq 1 ]];
    then
+#	killall socat
 	echo "Normal exit"	
 	break       	   #Abandon the loop. (quit button)
    fi
