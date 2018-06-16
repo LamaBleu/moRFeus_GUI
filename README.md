@@ -11,8 +11,12 @@ Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork
 
 UPDATE 11-jun-2018 :  
 network support for moRFeus here : https://github.com/LamaBleu/moRFeus_listener  
-moRFeus_listener is just a basic and minimalist interface to remotely/locally control moRFeus device from shell, telnet, or sending TCP frames (for scripting use).  
-moRFeus_GUI will probably migrate under moRFeus_listener environment.  
+moRFeus_GUI will probably soon migrate under moRFeus_listener environment.  
+
+UPDATE 17-jun-2018 :  
+Added "get signal level from GQRX" with CSV export file, for RPi only, when running step generator.  
+Why ? more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
+  
 
 
 
@@ -21,7 +25,7 @@ Installation
 
  #### Raspberry Pi
  
- Installation is now really easy (assuming for user:'pi' otherwise adjust $morf_tool_path variable): 
+ Installation is now really easy (assuming for user:'pi' otherwise adjust $morf_tool_path variable in RPi_moRFeus.sh): 
  
   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
   `cd moRFeus_GUI`  
