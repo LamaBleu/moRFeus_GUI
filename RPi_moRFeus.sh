@@ -400,8 +400,8 @@ fi
 # step numbers
 band=$((band+1))
 
-i=$((stepper_start_int))
-end=$(($stepper_stop_int))
+#i=$((stepper_start_int))
+#end=$(($stepper_stop_int))
 
 echo "# Fstart: $i  -  Fend:  $end -  step: $((stepper_step_int)) Hz" > file.csv
 echo "# Start : "$(date +%Y-%m-%d" "%H:%M:%S) >> file.csv
