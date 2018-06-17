@@ -23,7 +23,8 @@
 #  !!!!!! IMPORTANT !!!!!!
 # As you need to be root to communicate with the device, launch the UI typing from shell : 
 #  " gksudo <directory_path>/GUI_moRFeus.sh"
-# or creating an alias morfgui='gksudo /home/pi/moRFeus_GUI/RPi_moRFeus.sh' that's not a bad idea ans my choice.
+# or creating an alias morfgui='cd /home/pi/moRFeus_GUI; gksudo /RPi_moRFeus.sh' 
+# that's not a bad idea and my choice. Once done it's forever and so easy :)
 
 #
 
@@ -420,9 +421,8 @@ fi
 # step numbers
 band=$((band+1))
 
-#i=$((stepper_start_int))
+istart=$((stepper_start_int))
 #end=$(($stepper_stop_int))
-istart=$i
 
 
 while [ $k -ne $band ]; do
@@ -473,7 +473,7 @@ echo "Stepper end.    "
 
 #end of csv file
 if [[ $GQRX_STEP = "VFO" ]]; then
-  echo "#Fstart: $i"   >> $morf_tool_path/datas/file.csv
+  echo "#Fstart: $istart"   >> $morf_tool_path/datas/file.csv
   echo "#Fend:  $end"   >> $morf_tool_path/datas/file.csv
   echo "#Step: $((stepper_step_int))"  >> $morf_tool_path/datas/file.csv
   echo "#Date: "$(date +%Y-%m-%d" "%H:%M:%S) >> $morf_tool_path/datas/file.csv
@@ -487,13 +487,14 @@ if [ $(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok install
 then
 	echo "gnuplot installed"
 	capture_time=$(date +%Y%m%d%H%M%S) 
-	gnuplot -persist -e "f0=$istart;fmax=$end" ./datas/plot.gnu
+	gnuplot -persist -e "f0=$istart;fmax=$end" ./plot.gnu
 
 
-# rename and set permissions /datas/..
-	mv ./datas/file.csv ./datas/$capture_time.csv
+# rename and set permissions from root to current user for new files...
+        mv ./datas/file.csv ./datas/$capture_time.csv
 	mv ./datas/signal.png ./datas/$capture_time.png
-       	sudo chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
+	chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
+       	
 fi
 
 sleep 0.5
