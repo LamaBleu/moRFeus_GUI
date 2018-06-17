@@ -14,7 +14,7 @@ network support for moRFeus here : https://github.com/LamaBleu/moRFeus_listener
 moRFeus_GUI will probably soon migrate under moRFeus_listener environment.  
 
 UPDATE 17-jun-2018 :  
-Added "get signal level from GQRX" with CSV export file, for RPi only, when running step generator.  
+Added to moRFeus_GUI feature to "get signal level from GQRX" with CSV export file and plots,but for RPi only, when running step generator.  
 Why ? more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
   
 
