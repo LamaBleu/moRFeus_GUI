@@ -1,16 +1,19 @@
 #!/bin/bash
 
 # GUI for moRFeus (Outernet) tool
-# for moRFeus device v1.6 - LamaBleu 04/2018
+# for moRFeus device v1.6 - LamaBleu 0/2018
 #
 #
-# INSTALLATION (Raspberry PI3)
+# INSTALLATION (Raspberry Pi3)
 # ========================
 
-# For Raspberry, installation is now automatic.
-# The script will download morfeus_tool from Outernet website, and check if packages 'yad' bc' and
+#For Raspberry, installation is now automatic.
+# Please note you have to install gnuplot gnuplot-qt packages to draw plot, but you don't need just to export CSV files.
+# The script will download morfeus_tool utility from Outernet website, and check if packages 'yad' bc' and
 # 'socat' are missing.
 #
+
+
 #    git clone https://github.com/LamaBleu/moRFeus_GUI
 #    cd moRFeus_GUI
 #    chmod +x *.sh
@@ -20,48 +23,57 @@
 #  !!!!!! IMPORTANT !!!!!!
 # As you need to be root to communicate with the device, launch the UI typing from shell : 
 #  " gksudo <directory_path>/GUI_moRFeus.sh"
+# or creating an alias morfgui='gksudo /home/pi/moRFeus_GUI/RPi_moRFeus.sh' that's not a bad idea ans my choice.
 
-
-
+#
 
 # GQRX support
 # ============
 # Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous work ;) )
 
-# Adapt parameters (IP,port) in this file to GQRX settings (should be OK by default)
+# Adapt parameters (IP,port) in this file to GQRX settings (should be OK by default 127.0.0.1)
 # Use GQRX_IP=127.0.0.1 for local use. Adapt GQRX_IP if GQRX running on a remote computer.
+# If connecting to a remote GQRX you have first to allow the computer running this script in GQRX remote control settings.
+#
 
 
 # USAGE:
 # =====
 # From the main window, you can :
-#	- read actual  VFO and LNB_LO values.
+#       - moRFeus : check actual status, set frequency, mode and current
+#	- GQRX status: network config, read actual VFO and LNB_LO values.
 #	- transfer the moRFeus freq to the GQRX VFO (generator mode, listen moRFeus signal)
 #	- transfer the moRFeus freq to GQRX LNB_LO (moRFeus mixer mode), to display real frequency on GQRX when running mixer mode.
 #	- reset GQRX LNB_LO freq. to 0 
-#	  GQRX is now the real frequency (mixer + GQRX VFO)
-# From the step generator menu, you can send the moRFeus frequency to GQRX or GQRX LNB_LO and so follow the signal. Cool!
 
 
-# Step Generator notes
-# ====================
+
+# Notes: step generator, file export and plotting 
+# ===============================================
 # Useful to follow the moRFeus signal in stepper mode from GQRX
-# Power level (current) can be set.
+# MoRFeus power level (current) can be set.
 # Steps can be negative (decremental steps) if F-start > F-end
-# Sending freq to GQRX/VFO allow you to follow moRFeus RF signal from GQRX during the stepping-sequence. 
-# Try to listen the audio signal (CW mode) of the generator. Very stable and clean !
-# Using GQRX 'local or remote) : follow moRFeus steps, retrieve signal level and store values in CSV file.
+# Sending freq to GQRX/VFO :
+#   - you can follow moRFeus RF signal walking around the spectrum from GQRX during the stepping-sequence. 
+#   - try to listen the audio signal (CW mode) of the generator. Very stable and clean !
+#   - using GQRX (local or remote) : get signal level and store values in CSV file. Plot results. 
+#     . prepare your stuffs, antenna, receiver, adjust levels and gain on GQRX
+#     . enable remote control from GQRX. 
+#     . go to step-generator mode, and slect freqs, power and "send Freq to GQRX : VFO". Run stepper, wait...
+#     . at the end of process csv file is generated (freq level) in ./datas directory
+#     . if gnuplot-qt is installed resulting plot will be displayed, and saved to ./datas/ directory
+# more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
+    
 
 
 #
 # Known bugs.
 # Lot ! The most annoying is pressing "Cancel button" on the step generator window...
-# Program runs a little bit slower with GQRX enabled. If you don't use GQRX you can disable the feature on this file.
+# 
 #
 #
-#
-
-# Credits goes to Outernet and Alex OZ9AEC to give us so nice tools. Thanks !
+# Thanks to : Outernet and Alex OZ9AEC to give us so nice tools.
+#           : rtl-sdr.com blog, Psynosaur and WA4OSH
 
 
 #############
@@ -80,6 +92,17 @@
 ####### Adapt to real path if not working.
 #  Replacing $HOME by full name of directory may help
 export morf_tool_path=/home/pi/moRFeus_GUI
+export MORF_USER=pi
+export GQRX_ENABLE=1
+export GQRX_IP=127.0.0.1
+export GQRX_PORT=7356
+
+########
+export stepper_step_int=0
+export GQRX_STEP="No"
+
+
+
 
 if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo
@@ -88,25 +111,18 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo "Outernet morfeus_tool not found ! "
     echo "Trying to download armv7 version (raspberry Pi)"
     wget -O $morf_tool_path/morfeus_tool  https://archive.outernet.is/morfeus_tool_v1.6/morfeus_tool_linux_armv7
+
     ### Tricks 
-    chown pi:pi $morf_tool_path/morfeus_tool
+    ### 
+    chown $MORF_USER:$MORF_USER $morf_tool_path/morfeus_tool
     chmod +x $morf_tool_path/morfeus_tool
     chmod +x $morf_tool_path/*.sh
     apt-get install -y yad bc socat
 fi
 
 #######
-####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
+####### GQRX settings - set GRQX_ENABLE=0 to avoid 'connection refused' messages
 #######
-export GQRX_ENABLE=1
-export GQRX_IP=127.0.0.1
-export GQRX_PORT=7356
-
-
-export stepper_step_int=0
-export morf_tool
-export GQRX_STEP="No"
-
 
 function on_click () {
 yad --about 
@@ -263,7 +279,8 @@ export status_current
 export freq_morf_a
 
 gqrx_get
-#socat -u tcp-l:7777,fork system:'read MESSAGE;$morf_tool_path/morfeus_tool setFrequency  $(($MESSAGE));echo "TCP receive : " $MESSAGE' &
+
+
 ####### main GUI window
 
 
@@ -296,8 +313,6 @@ if [[ $ret -eq 3 ]]; then
 $morf_tool_path/morfeus_tool Generator
 #$morf_tool_path/morfeus_tool setCurrent 1
 
-#echo "Stepper init Fstart: "$stepper_start_int " Fend: " $stepper_stop_int " Step Hz:  "$stepper_step_int " Hope-time : "$stepper_hop_dec \
-#"Power : "$status_current "  GQRX : "$GQRX_STEP
 
 #setting variables in advance i know why ;)
 stepper_step_int=10000
@@ -313,14 +328,14 @@ stepper_step="10000"
 stepper_start=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop=$(echo "$freq_morf_a + 0.000000" | bc)
 stepper_stop_int=$freq_morf_a
-#$morf_tool_path/morfeus_tool setCurrent 1
+
 ############
 
 stepper="$(yad  --center --width=320 --title="start Frequency" --form --text="  Now : $freq_morf kHz" \
 --field="Start_freq:NUM" $freq_morf_a'\!85e6..5.4e9\!100000\!0' \
 --field="Stop_freq:NUM" $freq_morf_a'\!85e6..5.4e9\!100000\!0' \
 --field="Step Hz:NUM" $stepper_step_int'\!0..1e9\!10000\!0' \
---field="Hop (s.):NUM" '5.\!0.5..3600\!0.5\!1' \
+--field="Hop (s.):NUM" '5.\!1..3600\!0.5\!1' \
 --field="Power:CB" $status_current'\!0!1!2!3!4!5!6!7' \
 --field="Send Freq to GQRX:CB" $GQRX_STEP'\!No!VFO!LNB_LO'  "" "" "" "" "" "" 2>/dev/null) "
 
@@ -359,7 +374,7 @@ band=${band#-}
 
 
 echo "Fstart: "$i " Fend: " $end " Step Hz: "$stepper_step "Hop-time: "$stepper_hop \
-"Jumps: "$band "  Power : "$stepper_current "  GQRX : "$GQRX_STEP
+"Jumps: "$band "+1  Power : "$stepper_current "  GQRX : "$GQRX_STEP
 
 
 # we need to switch to generator mode, and minimal power.
@@ -380,15 +395,20 @@ k=0
 #test if f_start > f_end, then launch decremental stepper
 # and swap f_start f_end variables
 
-if [[ "$i" > "$end" ]] ; then
+range=$(($end-$i))
+echo $range
+# [[ "$i" > "$end" ]]
+if [ "$range" -lt 0 ] ; then
 	echo "*** Decremental steps !"
 	#negative steps
 	stepper_step_int=-${stepper_step_int}
-	#swap f_end <->f_start
-	end=$((stepper_start_int))
-	i=$(($stepper_stop_int))
 
-	else
+
+	#swap f_end <->f_start
+#	end=$((stepper_start_int))
+#	i=$(($stepper_stop_int))
+
+  else
 
 	echo "*** Incremental steps !"
 	i=$((stepper_start_int))
@@ -402,9 +422,8 @@ band=$((band+1))
 
 #i=$((stepper_start_int))
 #end=$(($stepper_stop_int))
+istart=$i
 
-echo "# Fstart: $i  -  Fend:  $end -  step: $((stepper_step_int)) Hz" > file.csv
-echo "# Start : "$(date +%Y-%m-%d" "%H:%M:%S) >> file.csv
 
 while [ $k -ne $band ]; do
 
@@ -414,28 +433,35 @@ if [[ $GQRX_ENABLE -eq 1 ]];
    if [[ $GQRX_STEP = "LNB_LO" ]]; then
       #send to LNB_LO
       #echo "GQRX LNB_LO:  " $i
-      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
+      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
    fi
 
    if [[ $GQRX_STEP = "VFO" ]]; then
       #send to VFO
       #echo "GQRX VFO:  " $i
-      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 
+      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
    fi
 fi
 k=$((k+1))
 
 sleep $stepper_hop
+if [[ $GQRX_STEP = "VFO" ]]; then
+
 # get signal level, thanks to @csete
 GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
+ else
+	 $GQRX_LEVEL=none
+fi
 echo "Freq: $i - GQRX: $GQRX_STEP - Jump $k/$band   -  Level : $GQRX_LEVEL dB"
 
 # store freq,level values in csv file for future use (plot) :
 # same as https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
 # file compatible for use with rtl_power_fftw: https://github.com/AD-Vega/rtl-power-fftw/blob/master/doc/rtl_power_fftw.1.md
 
-echo "$i,$GQRX_LEVEL" >> file.csv
-
+   if [[ $GQRX_STEP = "VFO" ]]; then
+      #store signal level to CSV file
+      echo "$i $GQRX_LEVEL" >> $morf_tool_path/datas/file.csv
+   fi
 #next freq step
 i=$(($i+$stepper_step_int))
 #echo $i
@@ -444,7 +470,32 @@ i=$(($i+$stepper_step_int))
 
 done
 echo "Stepper end.    "
-echo "# End : "$(date +%Y-%m-%d" "%H:%M:%S) >> file.csv
+
+#end of csv file
+if [[ $GQRX_STEP = "VFO" ]]; then
+  echo "#Fstart: $i"   >> $morf_tool_path/datas/file.csv
+  echo "#Fend:  $end"   >> $morf_tool_path/datas/file.csv
+  echo "#Step: $((stepper_step_int))"  >> $morf_tool_path/datas/file.csv
+  echo "#Date: "$(date +%Y-%m-%d" "%H:%M:%S) >> $morf_tool_path/datas/file.csv
+fi
+
+#we will try to plot a graph, and save it only if package gnuplot-qt (and obviously gnuplot) is installed
+#very common by default
+
+
+if [ $(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") -eq 1 ];
+then
+	echo "gnuplot installed"
+	capture_time=$(date +%Y%m%d%H%M%S) 
+	gnuplot -persist -e "f0=$istart;fmax=$end" ./datas/plot.gnu
+
+
+# rename and set permissions /datas/..
+	mv ./datas/file.csv ./datas/$capture_time.csv
+	mv ./datas/signal.png ./datas/$capture_time.png
+       	sudo chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
+fi
+
 sleep 0.5
 
 
