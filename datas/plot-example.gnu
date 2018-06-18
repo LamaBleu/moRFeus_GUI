@@ -17,11 +17,12 @@ set xlabel "freq. [MHz]"
 set yrange [-70:5]
 set ylabel "level [dB]"
 set format x "%1.3f"
-plot './example.csv' using ($1)/1000000:($2) with lines lc rgb '#bf000a' notitle 
+plot './example.csv' using ($1)/1000000:($2) with lines lc rgb '#f9a39a' title 'raw data', \
+ './example.csv'using ($1)/1000000:($2) s b lc rgb '#2e4053' title 'average'
 set terminal push
 set terminal png size 1200, 600
 set output './example-1.png'
 replot
 set terminal pop
 replot
-
+pause 10
