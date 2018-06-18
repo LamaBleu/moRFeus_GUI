@@ -494,7 +494,7 @@ then
         mv ./datas/file.csv ./datas/$capture_time.csv
 	mv ./datas/signal.png ./datas/$capture_time.png
 	chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
-       	
+       	rm $morf_tool_path/datas/file.csv
 fi
 
 sleep 0.5
