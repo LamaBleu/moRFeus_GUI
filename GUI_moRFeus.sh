@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GUI for moRFeus (Outernet) tool with GQRX support.
-# for moRFeus device v1.6 - LamaBleu 04/2018
+# for moRFeus device v1.6 - LamaBleu 06/2018
 #
 #
 # INSTALLATION
@@ -19,6 +19,11 @@
 #
 # GUI will not launch if moRFeus device is not connected !
 #
+# GQRX and step-generator :
+# Using the step-generator in "VFO mode" (send freq to GQRX), will create a CSV file in ./datas/ directory.
+# More over, if gnuplot and gnuplot-qt are installed, the script will draw a plot.
+# Example in ./datas/ directory.
+#
 #
 # Credits goes to Outernet and Alex OZ9AEC to give us so nice tools. Thanks !
 
@@ -27,8 +32,21 @@
 #  Path to moRFeus directory (to morfeus_tool and this script).
 ####### Adapt to real path if not working.
 #  Replacing $HOME by full name of directory may help
+export morf_tool_path=$PWD
+# or (adapt) : export morf_tool_path=/home/user/moRFeus_GUI
 
-export morf_tool_path=$HOME/moRFeus_GUI
+export MORF_USER=$(ls -ld . | awk '{print $3}')
+
+# Use GQRX or not 
+export GQRX_ENABLE=1
+# 127.0.0.1 --> localhost
+# to connect a remote GQRX, be sure IP is allowed on the remote side.
+export GQRX_IP=127.0.0.1
+export GQRX_PORT=7356
+
+########
+export stepper_step_int=0
+export GQRX_STEP="No"
 
 
 if [ ! -f $morf_tool_path/morfeus_tool ]; then
@@ -75,7 +93,7 @@ fi
 
 chmod +x $morf_tool_path/morfeus_tool
 chmod +x $morf_tool_path/*.sh
-
+rm $morf_tool_path/datas/file.csv
 
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
 export GQRX_ENABLE=1
@@ -111,7 +129,7 @@ function gqrx_vfo_send () {
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
 #echo "gqrx_vfo_send : F "$freq_morf_a
-echo "F "$freq_morf_a > /dev/tcp/$GQRX_IP/$GQRX_PORT
+echo "F "$freq_morf_a > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
 setgenerator
 fi
 }
@@ -124,7 +142,7 @@ function gqrx_lnb_send () {
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
 #echo "gqrx_lnb_send : LNB_LO "$freq_morf_a
-echo "LNB_LO "$freq_morf_a > /dev/tcp/$GQRX_IP/$GQRX_PORT
+echo "LNB_LO "$freq_morf_a > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
 setmixer
 fi
 export GQRX_LNB
@@ -137,7 +155,7 @@ export -f gqrx_lnb_send
 function gqrx_lnb_reset () {
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
-echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT
+echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
 fi
 GQRX_LNB=0
 export GQRX_LNB
@@ -146,7 +164,16 @@ close_exit
 
 export -f gqrx_lnb_reset
 
+function remote_morfeus_receive () {
 
+#read MESSAGE
+echo "TCP receive : " $MESSAGE
+$morf_tool_path/morfeus_tool setFrequency  $(($MESSAGE))
+
+
+}
+
+export -f remote_morfeus_receive
 
 
 function setfreq () {
@@ -226,13 +253,18 @@ function mainmenu () {
 status_mode=$($morf_tool_path/morfeus_tool getFunction)
 status_current=$($morf_tool_path/morfeus_tool getCurrent)
 status_freq=$($morf_tool_path/morfeus_tool getFrequency)
-#freq_morf=${status_freq::-4}
-freq_morf_a="${freq_morf/$'.'/}"
+
+
+exec 2> /dev/null
+freq_morf=${status_freq::-4}
+freq_morf_a=${freq_morf/$'.'/}
+#echo $freq_morf_a
 export status_freq
 export status_current
 export freq_morf_a
 
 gqrx_get
+
 
 ####### main GUI window
 
@@ -255,16 +287,6 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 #echo " gqrx_enable : "$GQRX_ENABLE
 ret=$?
 
-### for debug
-#echo $ret
-#export ret
-#echo $data
-#if [[ $ret -eq 0 ]]; then
-#	GQRX_LNB=0
-#	echo ""
-#fi
-
-
 
 ############# step generator
 
@@ -273,41 +295,38 @@ if [[ $ret -eq 3 ]]; then
 
 # we need to switch to generator mode, and minimal power.
 $morf_tool_path/morfeus_tool Generator
-$morf_tool_path/morfeus_tool setCurrent 1
+#$morf_tool_path/morfeus_tool setCurrent 1
 
-#echo "Stepper init Fstart: "$stepper_start_int " Fend: " $stepper_stop_int " Step Hz:  "$stepper_step_int " Hope-time : "$stepper_hop_dec \
-#"Power : "$status_current "  GQRX : "$GQRX_STEP
 
 #setting variables in advance i know why ;)
 stepper_step_int=10000
 stepper_start_int=$freq_morf_a
 stepper_step=10000
-stepper_start_in=$(echo "$freq_morf_a + 0.000000" | bc)
-stepper_stop_in=$(echo "$freq_morf_a + 0.000000" | bc)
+stepper_start_in=$(echo "$freq_morf_a" | bc)
+stepper_stop_in=$(echo "$freq_morf_a" | bc)
 stepper_step_in=10000
-stepper_hop=5.00000
-stepper_hop1=5
+stepper_hop=5.0
+#stepper_hop1=5
 stepper="No"
-stepper_hop_dec=5.00000
 stepper_step="10000"
-stepper_start=$(echo "$freq_morf_a + 0.000000" | bc)
-stepper_stop=$(echo "$freq_morf_a + 0.000000" | bc)
+stepper_start=$freq_morf_a
+stepper_stop=$freq_morf_a
 stepper_stop_int=$freq_morf_a
 #$morf_tool_path/morfeus_tool setCurrent 1
 ############
 
 stepper="$(yad  --center --width=320 --title="start Frequency" --form --text="  Now : $freq_morf kHz" \
---field="Start_freq:NUM" $freq_morf_a'\!85e6..5.4e9\!100000\!0' \
---field="Stop_freq:NUM" $freq_morf_a'\!85e6..5.4e9\!100000\!0' \
---field="Step Hz:NUM" $stepper_step_int'\!0..1e9\!10000\!0' \
---field="Hop (s.):NUM" '5.\!0.5..3600\!0.5\!1' \
+--field="Start_freq:NUM" $freq_morf_a.'\!85e6..5.4e9\!100000\!0' \
+--field="Stop_freq:NUM" $freq_morf_a'.\!85e6..5.4e9\!100000\!0' \
+--field="Step Hz:NUM" $stepper_step_int'.\!0..1e9\!10000\!0' \
+--field="Hop (s.):NUM" '5.\!1..3600\!0.5\!1' \
 --field="Power:CB" $status_current'\!0!1!2!3!4!5!6!7' \
 --field="Send Freq to GQRX:CB" $GQRX_STEP'\!No!VFO!LNB_LO'  "" "" "" "" "" "" ) "
 
 
 
 #ret_step=$?
-#echo "ret_step "$ret_step
+#echo "ret_step "$stepper
 #export ret_step
 
 stepper_start=$(echo $(echo $(echo "$stepper" | cut -d\| -f 1)))
@@ -317,57 +336,60 @@ stepper_hop=$(echo $(echo $(echo "$stepper" | cut -d\| -f 4)))
 stepper_current=$(echo $(echo $(echo "$stepper" | cut -d\| -f 5)))
 GQRX_STEP=$(echo $(echo $(echo "$stepper" | cut -d\| -f 6)))
 
+#echo $stepper
 stepper_start="${stepper_start//,/$'.'}"
 stepper_stop="${stepper_stop//,/$'.'}"
-stepper_step_dec="${stepper_step//,/$'.'}"
-stepper_hop_dec="${stepper_hop//,/$'.'}"
-stepper_hop="${stepper_hop_dec::-5}"
-#echo "stepper_hop1 ${stepper_hop1//,/$'.'}"
-#echo "Stepper:" $stepper_hop1 "--"   $stepper_hop_dec "--" $stepper_hop
-#stepper_start_in=$(($stepper_start))
-#stepper_stop_in=$(($stepper_stop))
-#stepper_step_in=$(($stepper_step))
+stepper_step="${stepper_step//,/$'.'}"
+stepper_hop="${stepper_hop//,/$'.'}"
 
-stepper_start_int="${stepper_start::-7}"
-stepper_stop_int="${stepper_stop::-7}"
-stepper_step_int="${stepper_step::-7}"
-#echo $stepper_start ${stepper_start::-7}
+stepper_step_int=${stepper_step%%.*}
+stepper_start_int=${stepper_start%%.*}
+stepper_stop_int=${stepper_stop%%.*}
+stepper_hop_int=${stepper_hop::-5}
+stepper_current_int=${stepper_current%%.*}
 
+#echo $stepper_start_int
+#echo $stepper_stop
 i=$((stepper_start_int))
-end=$(($stepper_stop_int))
+#echo $i
+end=$((stepper_stop_int))
 band=$(((end-i)/stepper_step_int))
 band=${band#-}
 
-#test if f_start > f_end, then launch decremental stepper
-# and swap f_tart f_end variables
+#echo $i $end $band
 
-echo "Fstart: "$i " Fend: " $end " Step Hz: "$stepper_step_int "Hop-time: "$stepper_hop \
-"Jumps: "$band "  Power : "$stepper_current "  GQRX : "$GQRX_STEP
+
+echo "Fstart: "$i " Fend: " $end " Step Hz: "$stepper_step_int "Hop-time: "$stepper_hop_int
+echo " Jumps: " $(expr $band + 1) "  Power : "$stepper_current_int "  GQRX : "$GQRX_STEP
 
 # we need to switch to generator mode, and minimal power.
 $morf_tool_path/morfeus_tool Generator
 $morf_tool_path/morfeus_tool setCurrent $stepper_current
 
 
+
 if [[ $GQRX_ENABLE -eq 1 ]];
    then
 	if [[ $GQRX_STEP = "VFO" ]]; then
 		#scanning start : setting GQRX LNB_LO to 0, to ensure display on correct VFO freq.
-		echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT
+		echo "gqrx lnb_lo reset"
+		echo "LNB_LO 0 " > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
 	fi
 fi
 k=0
 
-if [[ "$i" > "$end" ]] ; then
+#test if f_start > f_end, then launch decremental stepper
+# and swap f_start f_end variables
+
+range=$(($end-$i))
+#echo $range
+
+if [ "$range" -lt 0 ] ; then
 	echo "*** Decremental steps !"
 	#negative steps
 	stepper_step_int=-${stepper_step_int}
-	#swap f_end <->f_start
-	end=$((stepper_start_int))
-	i=$(($stepper_stop_int))
 
-	else
-
+  else
 	echo "*** Incremental steps !"
 	i=$((stepper_start_int))
 	end=$(($stepper_stop_int))
@@ -375,11 +397,10 @@ if [[ "$i" > "$end" ]] ; then
 fi
 
 
-
+# number of steps
 band=$((band+1))
 
-i=$((stepper_start_int))
-	end=$(($stepper_stop_int))
+istart=$((stepper_start_int))
 
 
 while [ $k -ne $band ]; do
@@ -390,25 +411,81 @@ if [[ $GQRX_ENABLE -eq 1 ]];
    if [[ $GQRX_STEP = "LNB_LO" ]]; then
       #send to LNB_LO
       #echo "GQRX LNB_LO:  " $i
-      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
+      echo "LNB_LO "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
    fi
 
    if [[ $GQRX_STEP = "VFO" ]]; then
       #send to VFO
       #echo "GQRX VFO:  " $i
-      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT
-   fi  
+      echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
+   fi
 fi
 k=$((k+1))
 
-echo "Freq: "$i" - GQRX: "$GQRX_STEP" - Jump "$k"/"$band
+sleep $stepper_hop
+if [[ $GQRX_STEP = "VFO" ]]; then
+sleep 0.15
+# get signal level, thanks to @csete
+GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
+# however sometimes received signal is 0.0 dB, 
+while [[ $GQRX_STEP = "VFO" && $GQRX_LEVEL = "0.0" ]]
+ do
+   echo "Freq: $i - GQRX: bad result - try again ..."
+   sleep 0.1
+   GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
+ done
+else
+	 GQRX_LEVEL="none"
 
+fi
+
+echo "Freq: $i - GQRX: $GQRX_STEP - Jump $k/$band   -  Level : $GQRX_LEVEL dB"
+
+# store freq,level values in csv file for future use (plot) :
+# same as https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
+# file compatible for use with rtl_power_fftw: https://github.com/AD-Vega/rtl-power-fftw/blob/master/doc/rtl_power_fftw.1.md
+
+   if [[ $GQRX_STEP = "VFO" ]]; then
+      #store signal level to CSV file
+      echo "$i $GQRX_LEVEL" >> $morf_tool_path/datas/file.csv
+   fi
+#next freq step
 i=$(($i+$stepper_step_int))
 #echo $i
-sleep $stepper_hop
+
+
 
 done
 echo "Stepper end.    "
+
+#end of csv file
+if [[ $GQRX_STEP = "VFO" ]]; then
+  echo "#Fstart: $istart"   >> $morf_tool_path/datas/file.csv
+  echo "#Fend:  $end"   >> $morf_tool_path/datas/file.csv
+  echo "#Step: $((stepper_step_int))"  >> $morf_tool_path/datas/file.csv
+  echo "#Date: "$(date +%Y-%m-%d" "%H:%M:%S) >> $morf_tool_path/datas/file.csv
+ 
+fi
+#we will try to plot a graph, and save it.. only if package gnuplot-qt (and obviously gnuplot) is installed
+#very common by default
+
+capture_time=$(date +%Y%m%d%H%M%S) 
+if [ $(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") -eq 1 ];
+ then
+	#echo "gnuplot installed"
+	
+	gnuplot -persist -e "f0=$istart;fmax=$end" ./plot.gnu
+        mv ./datas/signal.png ./datas/$capture_time.png
+ else
+        echo "gnuplot not installed"
+fi
+# rename and set permissions from root to current user for new files...
+# rename the CSV file to current date-time
+mv ./datas/file.csv ./datas/$capture_time.csv        
+chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
+
+#       	rm $morf_tool_path/datas/file.csv
+# sudo chown $MORF_USER:$MORF_USER ./datas/*
 sleep 0.5
 
 
