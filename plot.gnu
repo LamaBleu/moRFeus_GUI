@@ -16,6 +16,8 @@ set yrange [-70:5]
 set ylabel "level [dB]"
 set format x "%1.3f"
 set timestamp
+set key at graph 0.95, 0.95
+set size 0.95,0.95
 plot './datas/file.csv' using ($1)/1000000:($2) with lines lc rgb '#bf000a' notitle 
 set terminal push
 set terminal png size 1200, 600
