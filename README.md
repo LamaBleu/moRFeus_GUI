@@ -93,17 +93,17 @@ CSV export and plotting (using GQRX and moRFeus as RF generator)
 ================================================================
 
   - using GQRX (local or remote) to test antennas, filters, receiver performance. Get signal level at regular steps accross the spectrum and store results in CSV file. Then plot results. 
-     . prepare your stuffs, antenna, receiver, adjust levels and gain on GQRX on central frequency of the range you will study
-     . enable remote control from GQRX. If GQRX is running on remote computer you have to allow client IP address in GQRX remote control settings.
-     . go to step-generator mode, and select start/stop freqs, power, choose "send Freq to GQRX : VFO". Run stepper, wait...  
+     . prepare your stuffs, antenna, receiver, adjust levels and gain on GQRX on central frequency of the range you will study  
+     . enable remote control from GQRX. If GQRX is running on remote computer you have to allow client IP address in GQRX remote control settings.  
+     . go to step-generator mode, and select start/stop freqs, power, choose "send Freq to GQRX : VFO". Run stepper, wait...    
      . at the end of process csv file is generated (freq level) in ./datas directory  
      . **Only if** gnuplot-qt and gnuplot-qt packages are installed, a resulting plot will be displayed, and saved to ./datas/ directory  
      . full example is provided in ./datas/ directory, with gnuplot script to plot again graph from CSV file.  
-
+  
 Here is an example, testing an old UHF TV antenna:  
 ![image](https://user-images.githubusercontent.com/26578895/42124301-55954e28-7c60-11e8-908d-3f98e4446634.png)
-
-more infos here on : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
+  
+more infos here on : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/  
     
 
 
