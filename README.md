@@ -6,17 +6,17 @@ Designed only for moRFeus device (RF mixer/generator made by Outernet).
 Product informations : https://store.outernet.is/products/morfeus-1   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 
-Code is very crude, with no error checking. Feel free to use it, improve it.  
-Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork (twitter), lama.bleu (gmail)
-
 UPDATE 11-jun-2018 :  
 network support for moRFeus here : https://github.com/LamaBleu/moRFeus_listener  
 moRFeus_GUI will probably soon migrate under moRFeus_listener environment.  
 
-UPDATE 17-jun-2018 :  
-Added to moRFeus_GUI feature to "get signal level from GQRX" with CSV export file and plots,but for RPi only, when running step generator.  
+UPDATE 30-jun-2018 :  
+moRFeus_GUI is now updated for both RPi and Linux-computer.
+New feature to "get signal level from GQRX" with CSV export file and plots, when running step generator.  
 Why ? more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
   
+Code is very crude, with no error checking. Feel free to use it, improve it.  
+Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork (twitter), lama.bleu (gmail)
 
 
 
@@ -47,7 +47,7 @@ Automatic install :
   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
   `cd moRFeus_GUI`  
   `chmod +x *.sh`  
-  `sudo ./GUI_moRFeus.sh`  
+  `gksudo ./GUI_moRFeus.sh`  
 
 
 At first launch the script will try to download the morfeus_tool from Outernet website, then perform installation tasks.
@@ -87,6 +87,25 @@ When using this feature please consider :
 - think first what you will do with your generator:  
   this can take lot of time, example: if you chose F-start=150MHz F-end=450MHz Step 1000Hz, hop every 10 seconds --> 9hrs45mins !  
 - IMPORTANT REMINDER : is not allowed to play everywhere in RF spectrum !  
+
+
+CSV export and plotting (using GQRX and moRFeus as RF generator)
+================================================================
+
+  - using GQRX (local or remote) to test antennas, filters, receiver performance. Get signal level at regular steps accross the spectrum and store results in CSV file. Then plot results. 
+     . prepare your stuffs, antenna, receiver, adjust levels and gain on GQRX on central frequency of the range you will study
+     . enable remote control from GQRX. If GQRX is running on remote computer you have to allow client IP address in GQRX remote control settings.
+     . go to step-generator mode, and select start/stop freqs, power, choose "send Freq to GQRX : VFO". Run stepper, wait...  
+     . at the end of process csv file is generated (freq level) in ./datas directory  
+     . **Only if** gnuplot-qt and gnuplot-qt packages are installed, a resulting plot will be displayed, and saved to ./datas/ directory  
+     . full example is provided in ./datas/ directory, with gnuplot script to plot again graph from CSV file.  
+
+Here is an example, testing an old UHF TV antenna:  
+![image](https://user-images.githubusercontent.com/26578895/42124301-55954e28-7c60-11e8-908d-3f98e4446634.png)
+
+more infos here on : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
+    
+
 
 
 GQRX support  
