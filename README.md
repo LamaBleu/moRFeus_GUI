@@ -89,15 +89,15 @@ When using this feature please consider :
 - IMPORTANT REMINDER : is not allowed to play everywhere in RF spectrum !  
 
 
-CSV export and plotting (using GQRX and moRFeus as RF generator)
-================================================================
+CSV export and plotting
+=======================
 
-  - using GQRX (local or remote) to test antennas, filters, receiver performance. Get signal level at regular steps accross the spectrum and store results in CSV file. Then plot results. 
-     . prepare your stuffs, antenna, receiver, adjust levels and gain on GQRX on central frequency of the range you will study  
+  - use moRFeus as RF generator and GQRX (local or remote) to test antennas, filters, receiver performance. Get signal level at regular steps accross the spectrum and store results in CSV file. Then plot results.  
+     . prepare your stuffs, antenna, receiver, adjust levels ppm calibration and gain on GQRX (set it first to central frequency of the range you will study)  
      . enable remote control from GQRX. If GQRX is running on remote computer you have to allow client IP address in GQRX remote control settings.  
-     . go to step-generator mode, and select start/stop freqs, power, choose "send Freq to GQRX : VFO". Run stepper, wait...    
+     . go to step-generator mode, and select start/stop freqs, power. Choose "send Freq to GQRX : VFO". Run stepper, wait...    
      . at the end of process csv file is generated (freq level) in ./datas directory  
-     . **Only if** gnuplot-qt and gnuplot-qt packages are installed, a resulting plot will be displayed, and saved to ./datas/ directory  
+     . **Only if** gnuplot and gnuplot-qt packages are installed, a resulting plot will be displayed, and saved to ./datas/ directory  
      . full example is provided in ./datas/ directory, with gnuplot script to plot again graph from CSV file.  
   
 Here is an example, testing an old UHF TV antenna:  
