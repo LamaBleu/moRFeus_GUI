@@ -3,7 +3,7 @@
 A simple tool to control your moRFeus device from your Linux-computer or Raspberry Pi
 
 Designed only for moRFeus device (RF mixer/generator made by Outernet).  
-Product informations : https://store.outernet.is/products/morfeus-1   
+Product informations : https://store.othernet.is/products/morfeus-1   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 
 UPDATE 11-jun-2018 :  
@@ -136,7 +136,7 @@ Just in case automatic install fails.
    `git clone https://github.com/LamaBleu/moRFeus_GUI`  
    `cd moRFeus_GUI`    
  
-* Download morfeus_tool executable from Outernet website: https://archive.outernet.is/morfeus_tool_v1.6/  
+* Download morfeus_tool executable from Outernet website: https://archive.othernet.is/morfeus_tool_v1.6/  
 - Choose the right version, adapted to your platform.  (Linux- 32 or 64bits)    
 - Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
 - Make  files executable (cd to directory ). No need to change files owner.  
