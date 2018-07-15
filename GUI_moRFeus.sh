@@ -71,7 +71,7 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo "Going to download for $OS bits platform"
     if [[ $OS -eq 32 ]] ||  [[ $OS -eq 64 ]];
       then
-        wget -O $morf_tool_path/morfeus_tool https://archive.outernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x$OS
+        wget -O $morf_tool_path/morfeus_tool https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x$OS
 	userdir=$(ls -l $HOME/moRFeus_GUI/GUI_moRFeus.sh | awk '{print $3}')
 	echo
 	echo "Modify morfeus_tool ownership to $userdir"
