@@ -111,7 +111,7 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo "Directory : " $morf_tool_path
     echo "Outernet morfeus_tool not found ! "
     echo "Trying to download armv7 version (raspberry Pi)"
-    wget -O $morf_tool_path/morfeus_tool  https://archive.outernet.is/morfeus_tool_v1.6/morfeus_tool_linux_armv7
+    wget -O $morf_tool_path/morfeus_tool  https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_armv7
 
     ### Tricks 
     ### 
