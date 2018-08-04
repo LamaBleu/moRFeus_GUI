@@ -23,6 +23,8 @@ Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork
 Installation  
 ============
 
+Short video showing installation and step-generator on Linux 64bits platform : [here](http://www.lamableu.net/files/moRFeus_GUI-install.mkv)
+
  #### Raspberry Pi
  
  Installation is now really easy (assuming for user:'pi' otherwise adjust $morf_tool_path variable in RPi_moRFeus.sh): 
