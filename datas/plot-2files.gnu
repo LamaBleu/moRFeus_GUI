@@ -6,7 +6,7 @@
 # freq(Hz) level
 # comments at the end of file only
 #
-# example test from shell reading file.csv : 
+# example test from shell reading 2 files example.csv and example2.csv : 
 # gnuplot -persist -e "f0=144000000;fmax=146000000" ./plot.gnu
 #
 #
@@ -17,11 +17,11 @@ set xlabel "freq. [MHz]"
 set yrange [-90:-10]
 set ylabel "level [dB]"
 set format x "%1.3f"
-plot './example.csv' using ($1)/1000000:($2) with lines lc rgb '#f9a39a' title 'raw data', \
- './example.csv' using ($1)/1000000:($2) s b lc rgb '#2e4053' title 'average'
+plot './example.csv' using ($1)/1000000:($2) with lines lc rgb '#f9a39a' title 'example 1', \
+ './example2.csv' using ($1)/1000000:($2) with lines lc rgb '#2e4053' title 'example 2'
 set terminal push
 set terminal png size 1200, 600
-set output './example-1.png'
+set output './example2.png'
 replot
 set terminal pop
 replot
