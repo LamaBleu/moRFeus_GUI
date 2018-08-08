@@ -12,7 +12,7 @@
 set term qt 0  size 1000,400 position 30,30
 set title "Fstart : " . sprintf("%09.3f", f0/1000) . " kHz  -  Fstop " . sprintf("%09.3f", fmax/1000) . " kHz"
 set xlabel "freq. [MHz]"
-set yrange [-70:5]
+set yrange [-110:-10]
 set ylabel "level [dB]"
 set format x "%1.3f"
 set timestamp

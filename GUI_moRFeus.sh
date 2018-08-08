@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GUI for moRFeus (Outernet) tool with GQRX support.
-# for moRFeus device v1.6 - LamaBleu 06/2018
+# for moRFeus device v1.6 - LamaBleu 03/2018
 #
 #
 # INSTALLATION
@@ -24,6 +24,14 @@
 # More over, if gnuplot and gnuplot-qt are installed, the script will draw a plot.
 # Example in ./datas/ directory.
 #
+# To redraw a previous plot using CSV file, goto to ./datas directory, example :
+#
+#    cp 20180805141258.csv example.csv 
+#    ./plot_example.sh 
+#
+#
+# 
+#
 #
 # Credits goes to Outernet and Alex OZ9AEC to give us so nice tools. Thanks !
 
@@ -37,7 +45,10 @@ export morf_tool_path=$PWD
 
 export MORF_USER=$(ls -ld . | awk '{print $3}')
 
-# Use GQRX or not 
+GNUPLOT_INSTALLED=$(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") 
+echo "GNUPlot : " $GNUPLOT_INSTALLED
+
+# Use GQRX or not (0/1)
 export GQRX_ENABLE=1
 # 127.0.0.1 --> localhost
 # to connect a remote GQRX, be sure IP is allowed on the remote side.
@@ -78,7 +89,7 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
 	chown $userdir:$userdir $HOME/moRFeus_GUI/morfeus_tool
       else
        echo 
-       echo "Huuuhhhh , NO SORRY ! 32 ou 64 only ! (or manual download : https://archive.outernet.is/morfeus_tool_v1.6/ )"
+       echo "Huuuhhhh , NO SORRY ! 32 ou 64 only ! (or manual download : https://archive.othernet.is/morfeus_tool_v1.6/ )"
     fi
     printf "\n\n\n" 
     printf "\n\n\n"
@@ -92,8 +103,9 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
 fi
 
 chmod +x $morf_tool_path/morfeus_tool
-chmod +x $morf_tool_path/*.sh
-rm $morf_tool_path/datas/file.csv
+chmod -R +x $morf_tool_path/*.sh
+rm $morf_tool_path/datas/file.csv 2>/dev/null
+rm /tmp/qplot.csv 2>/dev/null
 
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
 export GQRX_ENABLE=1
@@ -299,6 +311,8 @@ $morf_tool_path/morfeus_tool Generator
 
 
 #setting variables in advance i know why ;)
+rm /tmp/stop 2>/dev/null
+percent=0
 stepper_step_int=10000
 stepper_start_int=$freq_morf_a
 stepper_step=10000
@@ -401,13 +415,18 @@ fi
 band=$((band+1))
 
 istart=$((stepper_start_int))
-
+rm /tmp/stop 2>/dev/null
 
 while [ $k -ne $band ]; do
 
+if [ -f /tmp/stop ]; then
+  echo " *** received STOP signal"
+  k=$((band-1))
+fi
+
 $morf_tool_path/morfeus_tool setFrequency $i
-if [[ $GQRX_ENABLE -eq 1 ]];
-   then
+if [[ $GQRX_ENABLE -eq 1 ]]; then
+
    if [[ $GQRX_STEP = "LNB_LO" ]]; then
       #send to LNB_LO
       #echo "GQRX LNB_LO:  " $i
@@ -419,36 +438,92 @@ if [[ $GQRX_ENABLE -eq 1 ]];
       #echo "GQRX VFO:  " $i
       echo "F "$i > /dev/tcp/$GQRX_IP/$GQRX_PORT 2>/dev/null
    fi
+
 fi
 k=$((k+1))
+percent=$( bc <<<"$k*100/$band") 
+echo $percent > /tmp/percent
+export percent
 
-sleep $stepper_hop
-if [[ $GQRX_STEP = "VFO" ]]; then
-sleep 0.15
-# get signal level, thanks to @csete
-GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
-# however sometimes received signal is 0.0 dB, 
-while [[ $GQRX_STEP = "VFO" && $GQRX_LEVEL = "0.0" ]]
- do
-   echo "Freq: $i - GQRX: bad result - try again ..."
-   sleep 0.1
-   GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
- done
-else
-	 GQRX_LEVEL="none"
 
+# display a progress bar using YAD as separate task.
+# can also send STOP order (cancel button)
+
+percent=$( bc <<<"$k*100/$band") 
+echo $percent > /tmp/percent
+export percent
+
+if [[ $k -eq 1 ]];
+   then
+    sh ./progressbar.sh &
 fi
 
-echo "Freq: $i - GQRX: $GQRX_STEP - Jump $k/$band   -  Level : $GQRX_LEVEL dB"
+sleep $stepper_hop
+
+### Using GQRX and select VFO stepper-mode: get level, store datas, create export file, and live-plot
+
+if [[ $GQRX_STEP = "VFO" ]]; then
+   sleep 0.15
+   # get signal level, thanks to @csete
+   GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
+   # however sometimes received signal is 0.0 dB, 
+	while [[ $GQRX_STEP = "VFO" && $GQRX_LEVEL = "0.0" ]]
+	do
+   		echo "Freq: $i - GQRX: bad result - try again ..."
+   		sleep 0.1
+  		 GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
+ 	done
 
 # store freq,level values in csv file for future use (plot) :
 # same as https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
 # file compatible for use with rtl_power_fftw: https://github.com/AD-Vega/rtl-power-fftw/blob/master/doc/rtl_power_fftw.1.md
 
-   if [[ $GQRX_STEP = "VFO" ]]; then
-      #store signal level to CSV file
-      echo "$i $GQRX_LEVEL" >> $morf_tool_path/datas/file.csv
-   fi
+#store signal level to CSV file
+    echo "$i $GQRX_LEVEL" >> $morf_tool_path/datas/file.csv
+
+# live plot
+  if [ $GNUPLOT_INSTALLED -eq 1 ]; then
+#if [ $(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") -eq 1 ]; then	
+		rm /tmp/qplot.csv
+     		#gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop" ./qplot.gnu
+	if [[ ! -z "$GQRX_LEVEL" ]] ; then
+     		cp $morf_tool_path/datas/file.csv /tmp/qplot.csv
+           else
+                echo "GQRX --> no link (remote control enabled?)"   
+		
+	fi	
+      		echo $stepper_stop_int" " >> /tmp/qplot.csv
+      		gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop;k=$k;band=$band" ./qplot.gnu  &
+		#implicit : live-plot will not be displayed if "GQRX no link status"
+  fi      	
+
+else
+    
+    GQRX_LEVEL="none"
+
+
+
+# gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop;k=$k;band=$band" ./qplot.gnu  &
+#(while [ $((k <= band)) '=' 1 ]
+#do
+#   echo $k
+#  echo $((k*100))
+#    echo $(( k/band*100 ))
+#   echo $percent | zenity --progress  &
+#    sleep 1
+#    k=$((k + 5))
+#done) | zenity --progress --auto-close
+
+
+
+fi
+
+
+echo "$percent %  -- Freq: $i - GQRX: $GQRX_STEP - Jump $k/$band   -  Level : $GQRX_LEVEL dB"
+
+
+
+
 #next freq step
 i=$(($i+$stepper_step_int))
 #echo $i
@@ -469,24 +544,31 @@ fi
 #we will try to plot a graph, and save it.. only if package gnuplot-qt (and obviously gnuplot) is installed
 #very common by default
 
-capture_time=$(date +%Y%m%d%H%M%S) 
-if [ $(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") -eq 1 ];
+capture_time=$(date +%Y%m%d-%H%M%S) 
+
+
+#GNUPLOT_INSTALLED
+if [ $GNUPLOT_INSTALLED -eq 1 ];
+#if [ $(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") -eq 1 ];
  then
 	#echo "gnuplot installed"
 	
 	gnuplot -persist -e "f0=$istart;fmax=$end" ./plot.gnu
         mv ./datas/signal.png ./datas/$capture_time.png
  else
-        echo "gnuplot not installed"
+        echo "gnuplot not installed, however data will be exported (CSV file)"
 fi
+
+
 # rename and set permissions from root to current user for new files...
 # rename the CSV file to current date-time
-mv ./datas/file.csv ./datas/$capture_time.csv        
+mv ./datas/file.csv ./datas/$capture_time.csv
+echo " CSV export :  $morf_tool_path/datas/$capture_time.csv"       
 chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
 
 #       	rm $morf_tool_path/datas/file.csv
 # sudo chown $MORF_USER:$MORF_USER ./datas/*
-sleep 0.5
+sleep 0.3
 
 
 fi
