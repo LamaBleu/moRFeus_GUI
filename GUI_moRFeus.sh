@@ -103,9 +103,11 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
 fi
 
 chmod +x $morf_tool_path/morfeus_tool
-chmod -R +x $morf_tool_path/*.sh
+# set executable for .sh (recursive)
+find . -name '*.sh' -type f | xargs chmod +x
 rm $morf_tool_path/datas/file.csv 2>/dev/null
 rm /tmp/qplot.csv 2>/dev/null
+rm /tmp/stop 2>/dev/null
 
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
 export GQRX_ENABLE=1
@@ -501,21 +503,6 @@ else
     
     GQRX_LEVEL="none"
 
-
-
-# gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop;k=$k;band=$band" ./qplot.gnu  &
-#(while [ $((k <= band)) '=' 1 ]
-#do
-#   echo $k
-#  echo $((k*100))
-#    echo $(( k/band*100 ))
-#   echo $percent | zenity --progress  &
-#    sleep 1
-#    k=$((k + 5))
-#done) | zenity --progress --auto-close
-
-
-
 fi
 
 
@@ -566,10 +553,9 @@ mv ./datas/file.csv ./datas/$capture_time.csv
 echo " CSV export :  $morf_tool_path/datas/$capture_time.csv"       
 chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
 
-#       	rm $morf_tool_path/datas/file.csv
-# sudo chown $MORF_USER:$MORF_USER ./datas/*
 sleep 0.3
-
+rm /tmp/qplot.csv 2>/dev/null
+rm /tmp/stop 2>/dev/null
 
 fi
 #mainmenu
