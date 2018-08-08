@@ -6,12 +6,14 @@ Designed only for moRFeus device (RF mixer/generator made by Outernet).
 Product informations : https://store.othernet.is/products/morfeus-1   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 
+UPDATE 08-aug-2018 :
+Updated version is on the way, on the 'next' github branch. Linux 32/64bits only, Rpi to come soon.
+
 UPDATE 11-jun-2018 :  
 network support for moRFeus here : https://github.com/LamaBleu/moRFeus_listener  
 moRFeus_GUI will probably soon migrate under moRFeus_listener environment.  
 
 UPDATE 30-jun-2018 :  
-moRFeus_GUI is now updated for both RPi and Linux-computer.
 New feature to "get signal level from GQRX" with CSV export file and plots, when running step generator.  
 Why ? more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
   
