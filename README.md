@@ -6,17 +6,18 @@ Designed only for moRFeus device (RF mixer/generator made by Outernet).
 Product informations : https://store.othernet.is/products/morfeus-1   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 
-UPDATE 11-jun-2018 :  
-network support for moRFeus here : https://github.com/LamaBleu/moRFeus_listener  
-moRFeus_GUI will probably soon migrate under moRFeus_listener environment.  
+UPDATE 08/08/2018 : This is the 'next' version.  
+RPi will be supported soon, using unique script.  
+Fixes, added live-plot, progress-bar during step-sequence.  
+Abort during step-sequence is now possible by pressing on "cancel button"  
+GNUPlot (gnuplot AND gnuplot-qt) is not mandatory, only optional.  
 
-UPDATE 30-jun-2018 :  
-moRFeus_GUI is now updated for both RPi and Linux-computer.
+
 New feature to "get signal level from GQRX" with CSV export file and plots, when running step generator.  
 Why ? more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
   
 Code is very crude, with no error checking. Feel free to use it, improve it.  
-Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork (twitter), lama.bleu (gmail)
+Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarragepas (reddit)
 
 
 
@@ -25,23 +26,7 @@ Installation
 
 Short video showing installation and step-generator on Linux 64bits platform : [here](http://www.lamableu.net/files/moRFeus_GUI-install.mkv)
 
- #### Raspberry Pi
  
- Installation is now really easy (assuming for user:'pi' otherwise adjust $morf_tool_path variable in RPi_moRFeus.sh): 
- 
-  `git clone https://github.com/LamaBleu/moRFeus_GUI`  
-  `cd moRFeus_GUI`  
-  `chmod +x *.sh`  
-  `gksudo ./RPi_moRFeus.sh`  
-  
-NOTE : it's important to use 'gksudo', not 'sudo'. 
-'sudo' command will work only on local console (HDMI port). 'gksudo' wiil work locally and remotely (through VNC ou RDP access)  
-  
-The script will download Outernet morfeus_tool executable, then install 'yad' bc' and 'socat' packages.  
-Outernet moRFeus device has to be connected to the RPi to run the program!  
-  
-Raspberry Pi screenshots (Stretch) : [Install at first launch](https://imgur.com/2Qbmq5h) , and Rpi-moRFeus [connected to GQRX](https://imgur.com/ACr0HGj)
-
 #### Linux
 
 Automatic install :
@@ -54,8 +39,6 @@ Automatic install :
 
 At first launch the script will try to download the morfeus_tool from Outernet website, then perform installation tasks.
 You will be asked to choose 32 or 64 bits version.
-
-
 
 
 
@@ -152,8 +135,7 @@ As you need to be root to communicate with the device, launch the UI typing from
 
 Known bugs.  
 ===========
-Lot ! 
-The most annoying is pressing "Cancel" button on the "step generator" window...  
+
 Program runs a little bit slower with GQRX support enabled. 
 If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on this file.  
 
