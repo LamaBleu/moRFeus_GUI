@@ -345,7 +345,7 @@ stepper_hop="${stepper_hop//,/$'.'}"
 stepper_step_int=${stepper_step%%.*}
 stepper_start_int=${stepper_start%%.*}
 stepper_stop_int=${stepper_stop%%.*}
-stepper_hop_int=${stepper_hop::-5}
+stepper_hop_int=${stepper_hop%%.*}
 stepper_current_int=${stepper_current%%.*}
 
 #echo $stepper_start_int
