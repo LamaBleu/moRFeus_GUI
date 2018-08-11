@@ -83,10 +83,10 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     if [[ $OS -eq 32 ]] ||  [[ $OS -eq 64 ]];
       then
         wget -O $morf_tool_path/morfeus_tool https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x$OS
-	userdir=$(ls -l $HOME/moRFeus_GUI/GUI_moRFeus.sh | awk '{print $3}')
+	userdir=$(ls -l $morf_tool_path/GUI_moRFeus.sh | awk '{print $3}')
 	echo
 	echo "Modify morfeus_tool ownership to $userdir"
-	chown $userdir:$userdir $HOME/moRFeus_GUI/morfeus_tool
+	chown $userdir:$userdir $morf_tool_path/morfeus_tool
       else
        echo 
        echo "Huuuhhhh , NO SORRY ! 32 ou 64 only ! (or manual download : https://archive.othernet.is/morfeus_tool_v1.6/ )"
@@ -103,11 +103,9 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
 fi
 
 chmod +x $morf_tool_path/morfeus_tool
-# set executable for .sh (recursive)
-find . -name '*.sh' -type f | xargs chmod +x
+chmod -R +x $morf_tool_path/*.sh
 rm $morf_tool_path/datas/file.csv 2>/dev/null
 rm /tmp/qplot.csv 2>/dev/null
-rm /tmp/stop 2>/dev/null
 
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
 export GQRX_ENABLE=1
@@ -191,7 +189,8 @@ export -f remote_morfeus_receive
 
 
 function setfreq () {
-freq_morf=${status_freq::-4}
+freq_morf=${status_freq%????}
+#freq_morf=${status_freq::-4}
 freq_morf_a="${freq_morf/$'.'/}"
 
 INPUTTEXT=`yad  --center --width=270 --title="set Frequency" --form --text="  Now : $freq_morf kHz" --field="Number:NUM" $freq_morf_a'\!85e6..5.4e9\!1000\!0 2>/dev/null'`  
@@ -270,7 +269,8 @@ status_freq=$($morf_tool_path/morfeus_tool getFrequency)
 
 
 exec 2> /dev/null
-freq_morf=${status_freq::-4}
+freq_morf=${status_freq%????}
+#freq_morf=${status_freq::-4}
 freq_morf_a=${freq_morf/$'.'/}
 #echo $freq_morf_a
 export status_freq
@@ -284,7 +284,7 @@ gqrx_get
 
 
 
-data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=" moRFeus control \n by LamaBleu 04/2018 \n" \
+data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=" moRFeus control \n by LamaBleu 08/2018 (next) \n" \
 --form --field=Freq:RO "$status_freq" --field="Mode:RO" "$status_mode" --field="Power:RO"  "$status_current"  \
 --field=:LBL "" --form --field="Set Frequency:FBTN" "bash -c setfreq" \
 --field="set Generator mode:FBTN" "bash -c setgenerator" \
@@ -361,7 +361,7 @@ stepper_hop="${stepper_hop//,/$'.'}"
 stepper_step_int=${stepper_step%%.*}
 stepper_start_int=${stepper_start%%.*}
 stepper_stop_int=${stepper_stop%%.*}
-stepper_hop_int=${stepper_hop::-5}
+stepper_hop_int=${stepper_hop%%?????}
 stepper_current_int=${stepper_current%%.*}
 
 #echo $stepper_start_int
@@ -457,7 +457,7 @@ export percent
 
 if [[ $k -eq 1 ]];
    then
-    sh ./progressbar.sh &
+    sh $morf_tool_path/progressbar.sh &
 fi
 
 sleep $stepper_hop
@@ -495,13 +495,28 @@ if [[ $GQRX_STEP = "VFO" ]]; then
 		
 	fi	
       		echo $stepper_stop_int" " >> /tmp/qplot.csv
-      		gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop;k=$k;band=$band" ./qplot.gnu  &
+      		gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop;k=$k;band=$band" $morf_tool_path/qplot.gnu  &
 		#implicit : live-plot will not be displayed if "GQRX no link status"
   fi      	
 
 else
     
     GQRX_LEVEL="none"
+
+
+
+# gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop;k=$k;band=$band" ./qplot.gnu  &
+#(while [ $((k <= band)) '=' 1 ]
+#do
+#   echo $k
+#  echo $((k*100))
+#    echo $(( k/band*100 ))
+#   echo $percent | zenity --progress  &
+#    sleep 1
+#    k=$((k + 5))
+#done) | zenity --progress --auto-close
+
+
 
 fi
 
@@ -541,7 +556,7 @@ if [ $GNUPLOT_INSTALLED -eq 1 ];
 	#echo "gnuplot installed"
 	
 	gnuplot -persist -e "f0=$istart;fmax=$end" ./plot.gnu
-        mv ./datas/signal.png ./datas/$capture_time.png
+        mv $morf_tool_path/datas/signal.png $morf_tool_path/datas/$capture_time.png
  else
         echo "gnuplot not installed, however data will be exported (CSV file)"
 fi
@@ -549,13 +564,14 @@ fi
 
 # rename and set permissions from root to current user for new files...
 # rename the CSV file to current date-time
-mv ./datas/file.csv ./datas/$capture_time.csv
+mv $morf_tool_path/datas/file.csv $morf_tool_path/datas/$capture_time.csv
 echo " CSV export :  $morf_tool_path/datas/$capture_time.csv"       
-chown $MORF_USER:$MORF_USER ./datas/$capture_time.*
+chown $MORF_USER:$MORF_USER $morf_tool_path/datas/$capture_time.*
 
+#       	rm $morf_tool_path/datas/file.csv
+# sudo chown $MORF_USER:$MORF_USER ./datas/*
 sleep 0.3
-rm /tmp/qplot.csv 2>/dev/null
-rm /tmp/stop 2>/dev/null
+
 
 fi
 #mainmenu
