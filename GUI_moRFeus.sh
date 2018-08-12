@@ -93,7 +93,7 @@ fi
 
 chmod +x $morf_tool_path/morfeus_tool
 chmod +x $morf_tool_path/*.sh
-rm $morf_tool_path/datas/file.csv
+rm $morf_tool_path/datas/file.csv 2>/dev/null
 
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
 export GQRX_ENABLE=1
@@ -177,7 +177,8 @@ export -f remote_morfeus_receive
 
 
 function setfreq () {
-freq_morf=${status_freq::-4}
+freq_morf=${status_freq%????}
+#freq_morf=${status_freq::-4}
 freq_morf_a="${freq_morf/$'.'/}"
 
 INPUTTEXT=`yad  --center --width=270 --title="set Frequency" --form --text="  Now : $freq_morf kHz" --field="Number:NUM" $freq_morf_a'\!85e6..5.4e9\!1000\!0 2>/dev/null'`  
@@ -256,7 +257,9 @@ status_freq=$($morf_tool_path/morfeus_tool getFrequency)
 
 
 exec 2> /dev/null
-
+freq_morf=${status_freq%????}
+#freq_morf=${status_freq::-4}
+freq_morf_a=${freq_morf/$'.'/}
 freq_morf=${status_freq%????}
 #freq_morf=${status_freq::-4}
 freq_morf_a=${freq_morf/$'.'/}
@@ -427,15 +430,19 @@ k=$((k+1))
 
 sleep $stepper_hop
 if [[ $GQRX_STEP = "VFO" ]]; then
-sleep 0.15
 # get signal level, thanks to @csete
+sleep 0.3
+
 GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
-# however sometimes received signal is 0.0 dB, 
+
+
+# however sometimes (using VM or GQRX on remote system) received signal is 0.0 dB, 
+# we try again but cost is 2 seconds TBI
 while [[ $GQRX_STEP = "VFO" && $GQRX_LEVEL = "0.0" ]]
  do
    echo "Freq: $i - GQRX: bad result - try again ..."
-   sleep 0.1
-   GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
+    GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
+sleep 2
  done
 else
 	 GQRX_LEVEL="none"
@@ -445,7 +452,6 @@ fi
 echo "Freq: $i - GQRX: $GQRX_STEP - Jump $k/$band   -  Level : $GQRX_LEVEL dB"
 
 # store freq,level values in csv file for future use (plot) :
-# same as https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
 # file compatible for use with rtl_power_fftw: https://github.com/AD-Vega/rtl-power-fftw/blob/master/doc/rtl_power_fftw.1.md
 
    if [[ $GQRX_STEP = "VFO" ]]; then
