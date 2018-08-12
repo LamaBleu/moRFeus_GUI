@@ -72,10 +72,10 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     if [[ $OS -eq 32 ]] ||  [[ $OS -eq 64 ]];
       then
         wget -O $morf_tool_path/morfeus_tool https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x$OS
-	userdir=$(ls -l $HOME/moRFeus_GUI/GUI_moRFeus.sh | awk '{print $3}')
+	userdir=$(ls -l $morf_tool_path/GUI_moRFeus.sh | awk '{print $3}')
 	echo
 	echo "Modify morfeus_tool ownership to $userdir"
-	chown $userdir:$userdir $HOME/moRFeus_GUI/morfeus_tool
+	chown $userdir:$userdir $morf_tool_path/morfeus_tool
       else
        echo 
        echo "Huuuhhhh , NO SORRY ! 32 ou 64 only ! (or manual download : https://archive.outernet.is/morfeus_tool_v1.6/ )"
@@ -256,8 +256,11 @@ status_freq=$($morf_tool_path/morfeus_tool getFrequency)
 
 
 exec 2> /dev/null
-freq_morf=${status_freq::-4}
+
+freq_morf=${status_freq%????}
+#freq_morf=${status_freq::-4}
 freq_morf_a=${freq_morf/$'.'/}
+
 #echo $freq_morf_a
 export status_freq
 export status_current
