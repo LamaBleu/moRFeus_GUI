@@ -413,11 +413,15 @@ if [ "$range" -lt 0 ] ; then
 fi
 
 
+
 # number of steps
 band=$((band+1))
 
 istart=$((stepper_start_int))
 rm /tmp/stop 2>/dev/null
+
+
+
 
 while [ $k -ne $band ]; do
 
@@ -425,6 +429,18 @@ if [ -f /tmp/stop ]; then
   echo " *** received STOP signal"
   k=$((band-1))
 fi
+
+# display a progress bar using YAD as separate task.
+# can also send STOP order (cancel button)
+
+percent=$( bc <<<"$k*100/$band") 
+echo $percent > /tmp/percent
+
+
+if [[ $k -eq 1 ]];   then
+    sh $morf_tool_path/progressbar.sh &
+fi
+
 
 $morf_tool_path/morfeus_tool setFrequency $i
 if [[ $GQRX_ENABLE -eq 1 ]]; then
@@ -442,25 +458,11 @@ if [[ $GQRX_ENABLE -eq 1 ]]; then
    fi
 
 fi
-k=$((k+1))
-percent=$( bc <<<"$k*100/$band") 
-echo $percent > /tmp/percent
-export percent
 
-
-# display a progress bar using YAD as separate task.
-# can also send STOP order (cancel button)
-
-percent=$( bc <<<"$k*100/$band") 
-echo $percent > /tmp/percent
-export percent
-
-if [[ $k -eq 1 ]];
-   then
-    sh $morf_tool_path/progressbar.sh &
-fi
 
 sleep $stepper_hop
+k=$((k+1))
+
 
 ### Using GQRX and select VFO stepper-mode: get level, store datas, create export file, and live-plot
 
@@ -505,6 +507,8 @@ else
 
 
 fi
+percent=$( bc <<<"$k*100/$band") 
+echo $percent > /tmp/percent
 
 
 echo "$percent %  -- Freq: $i - GQRX: $GQRX_STEP - Jump $k/$band   -  Level : $GQRX_LEVEL dB"
