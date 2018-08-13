@@ -104,7 +104,7 @@ fi
 
 chmod +x $morf_tool_path/morfeus_tool
 chmod -R +x $morf_tool_path/*.sh
-rm $morf_tool_path/datas/file.csv 2>/dev/null
+rm /tmp/file.csv 2>/dev/null
 rm /tmp/qplot.csv 2>/dev/null
 
 ####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
@@ -481,15 +481,15 @@ if [[ $GQRX_STEP = "VFO" ]]; then
 # file compatible for use with rtl_power_fftw: https://github.com/AD-Vega/rtl-power-fftw/blob/master/doc/rtl_power_fftw.1.md
 
 #store signal level to CSV file
-    echo "$i $GQRX_LEVEL" >> $morf_tool_path/datas/file.csv
+    echo "$i $GQRX_LEVEL" >> /tmp/file.csv
+
 
 # live plot
   if [ $GNUPLOT_INSTALLED -eq 1 ]; then
-#if [ $(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") -eq 1 ]; then	
 		rm /tmp/qplot.csv
      		#gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop" ./qplot.gnu
 	if [[ ! -z "$GQRX_LEVEL" ]] ; then
-     		cp $morf_tool_path/datas/file.csv /tmp/qplot.csv
+     		cp /tmp/file.csv /tmp/qplot.csv
            else
                 echo "GQRX --> no link (remote control enabled?)"   
 		
@@ -502,20 +502,6 @@ if [[ $GQRX_STEP = "VFO" ]]; then
 else
     
     GQRX_LEVEL="none"
-
-
-
-# gnuplot -e "f0=$istart;fmax=$end;stepper_hop=$stepper_hop;k=$k;band=$band" ./qplot.gnu  &
-#(while [ $((k <= band)) '=' 1 ]
-#do
-#   echo $k
-#  echo $((k*100))
-#    echo $(( k/band*100 ))
-#   echo $percent | zenity --progress  &
-#    sleep 1
-#    k=$((k + 5))
-#done) | zenity --progress --auto-close
-
 
 
 fi
@@ -537,10 +523,10 @@ echo "Stepper end.    "
 
 #end of csv file
 if [[ $GQRX_STEP = "VFO" ]]; then
-  echo "#Fstart: $istart"   >> $morf_tool_path/datas/file.csv
-  echo "#Fend:  $end"   >> $morf_tool_path/datas/file.csv
-  echo "#Step: $((stepper_step_int))"  >> $morf_tool_path/datas/file.csv
-  echo "#Date: "$(date +%Y-%m-%d" "%H:%M:%S) >> $morf_tool_path/datas/file.csv
+  echo "#Fstart: $istart"   >> /tmp/file.csv
+  echo "#Fend:  $end"   >> /tmp/file.csv
+  echo "#Step: $((stepper_step_int))"  >> /tmp/file.csv
+  echo "#Date: "$(date +%Y-%m-%d" "%H:%M:%S) >> /tmp/file.csv
  
 fi
 #we will try to plot a graph, and save it.. only if package gnuplot-qt (and obviously gnuplot) is installed
@@ -561,14 +547,14 @@ if [ $GNUPLOT_INSTALLED -eq 1 ];
         echo "gnuplot not installed, however data will be exported (CSV file)"
 fi
 
-
-# rename and set permissions from root to current user for new files...
-# rename the CSV file to current date-time
-mv $morf_tool_path/datas/file.csv $morf_tool_path/datas/$capture_time.csv
-echo " CSV export :  $morf_tool_path/datas/$capture_time.csv"       
-chown $MORF_USER:$MORF_USER $morf_tool_path/datas/$capture_time.*
-
-#       	rm $morf_tool_path/datas/file.csv
+if [[ $GQRX_STEP = "VFO" ]]; then
+	# rename and set permissions from root to current user for new files...
+	# rename the CSV file to current date-time
+	mv /tmp/file.csv $morf_tool_path/datas/$capture_time.csv
+	echo " CSV export :  $morf_tool_path/datas/$capture_time.csv"       
+	chown $MORF_USER:$MORF_USER $morf_tool_path/datas/$capture_time.*
+fi
+#       	rm /tmp/file.csv
 # sudo chown $MORF_USER:$MORF_USER ./datas/*
 sleep 0.3
 
