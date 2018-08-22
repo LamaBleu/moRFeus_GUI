@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # GUI for moRFeus (Outernet) tool with GQRX support.
-# for moRFeus device v1.6 - LamaBleu 03/2018
+# for moRFeus device v1.6 
+# by LamaBleu 08/2018 - (Hydra)	
 #
 #
 # INSTALLATION
@@ -10,10 +11,9 @@
 #
 #    git clone https://github.com/LamaBleu/moRFeus_GUI
 #    cd moRFeus_GUI
-#    chmod +x *.sh
 #    sudo ./GUI_moRFeus.sh
 #
-# At first launch the script will ask you which version (32 or 64 bits) to download
+# At first launch the script will ask you which version (arm, 32 or 64 bits) to download
 # from Outernet website archives.
 # If missing, packages 'yad' 'bc' and 'socat' are also installed.
 #
@@ -38,26 +38,36 @@
 
 
 #  Path to moRFeus directory (to morfeus_tool and this script).
-####### Adapt to real path if not working.
-#  Replacing $HOME by full name of directory may help
-export morf_tool_path=$PWD
+#  Adapt to real path if not working.
+#  Replacing $HOME by full directory path may help
 # or (adapt) : export morf_tool_path=/home/user/moRFeus_GUI
 
+export morf_tool_path=$PWD
+
+# original user name (we are working with sudo) - adapt to real username if not working
+# same here can be replaced by MORF_USER=username
+# alternative : 	MORF_USER=$(ls -l $morf_tool_path/GUI_moRFeus.sh | awk '{print $3}')
+
 export MORF_USER=$(ls -ld . | awk '{print $3}')
+
 
 GNUPLOT_INSTALLED=$(dpkg-query -W -f='${Status}' gnuplot-qt 2>/dev/null | grep -c "ok installed") 
 echo "GNUPlot : " $GNUPLOT_INSTALLED
 
+
+####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
+#
 # Use GQRX or not (0/1)
 export GQRX_ENABLE=1
+#
 # 127.0.0.1 --> localhost
-# to connect a remote GQRX, be sure IP is allowed on the remote side.
+# to connect a remote GQRX, be sure IP is allowed on the remote side (remote control settings menu, example ::ffff:192.168.5.23).
 export GQRX_IP=127.0.0.1
 export GQRX_PORT=7356
-
+export GQRX_STEP="No"
 ########
 export stepper_step_int=0
-export GQRX_STEP="No"
+OS=""
 
 
 if [ ! -f $morf_tool_path/morfeus_tool ]; then
@@ -65,9 +75,11 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo
     printf "\n\n\n"
     echo "#############################################"
-    echo
+    echo 
+    echo "Username :" $MORF_USER
     echo "Directory :" $morf_tool_path
     echo "Outernet morfeus_tool not found ! "
+    echo
     echo
     echo "#############################################"
     echo
@@ -75,22 +87,35 @@ if [ ! -f $morf_tool_path/morfeus_tool ]; then
     echo "Trying to download from Outernet website"
     echo
     printf "\n\n\n"
-    read -p "Choose OS Type 32 or 64 bits [32]: " OS
+    echo -n "Choose platform type:  'arm' (Raspberry), or Linux '32' or '64' bits [32/64/arm]: " 
+ 
+    read OS
     OS=${OS:-32}
     echo
     echo
-    echo "Going to download for $OS bits platform"
-    if [[ $OS -eq 32 ]] ||  [[ $OS -eq 64 ]];
-      then
-        wget -O $morf_tool_path/morfeus_tool https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x$OS
-	userdir=$(ls -l $morf_tool_path/GUI_moRFeus.sh | awk '{print $3}')
+   case $OS in
+	32) echo "    **** DOWNLOAD lINUX 32 BITS VERSION";
+		wget -O $morf_tool_path/morfeus_tool https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x32
+		;;
+	64) echo "    DOWNLOAD lINUX 64 BITS VERSION";
+		wget -O $morf_tool_path/morfeus_tool https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_x64
+		;;
+	arm) echo "    DOWNLOAD lINUX ARMV7 (RaspberryPi) VERSION";
+		wget -O $morf_tool_path/morfeus_tool https://archive.othernet.is/morfeus_tool_v1.6/morfeus_tool_linux_armv7
+		;;
+   	*) echo "OS type error !"
+		;;
+   esac
+
+
 	echo
-	echo "Modify morfeus_tool ownership to $userdir"
-	chown $userdir:$userdir $morf_tool_path/morfeus_tool
-      else
-       echo 
-       echo "Huuuhhhh , NO SORRY ! 32 ou 64 only ! (or manual download : https://archive.othernet.is/morfeus_tool_v1.6/ )"
-    fi
+	echo
+	echo
+	echo "Modify morfeus_tool ownership to $MORF_USER"
+	chown $MORF_USER:$MORF_USER $morf_tool_path/morfeus_tool
+	
+
+
     printf "\n\n\n" 
     printf "\n\n\n"
     echo
@@ -107,16 +132,11 @@ chmod -R +x $morf_tool_path/*.sh
 rm /tmp/file.csv 2>/dev/null
 rm /tmp/qplot.csv 2>/dev/null
 
-####### GQRX settings - GRQX_ENABLE= to avoid 'connection refused' messages
-export GQRX_ENABLE=1
-export GQRX_IP=127.0.0.1
-export GQRX_PORT=7356
 
 
 export stepper_step_int=0
-export morf_tool
 export GQRX_STEP="No"
-
+ret=0
 
 function on_click () {
 yad --about 
@@ -269,6 +289,7 @@ status_freq=$($morf_tool_path/morfeus_tool getFrequency)
 
 
 exec 2> /dev/null
+
 freq_morf=${status_freq%????}
 #freq_morf=${status_freq::-4}
 freq_morf_a=${freq_morf/$'.'/}
@@ -284,7 +305,7 @@ gqrx_get
 
 
 
-data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=" moRFeus control \n by LamaBleu 08/2018 (next) \n" \
+data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=" moRFeus control \n by LamaBleu 08/2018 (Hydra) \n" \
 --form --field=Freq:RO "$status_freq" --field="Mode:RO" "$status_mode" --field="Power:RO"  "$status_current"  \
 --field=:LBL "" --form --field="Set Frequency:FBTN" "bash -c setfreq" \
 --field="set Generator mode:FBTN" "bash -c setgenerator" \
@@ -295,12 +316,11 @@ data="$(yad --center --title="Outernet moRFeus v1.6" --text-align=center --text=
 --field="Morfeus/Gen. + Freq --> GQRX (VFO):FBTN" "bash -c gqrx_vfo_send" \
 --field="Morfeus/Mixer + Freq --> GQRX (LNB LO):FBTN" "bash -c gqrx_lnb_send" \
 --field="Reset GQRX LNB LO to 0:FBTN" "bash -c gqrx_lnb_reset" "" "" "" "" "" "" "" "" "" ""  \
---button="Step generator:3"  --button="Refresh:0" --button="Quit:1" 2>/dev/null)"  
+--button="Step generator:3"  --button="Refresh:0" --button="Quit:1" )"  
 
 
-#echo " gqrx_enable : "$GQRX_ENABLE
 ret=$?
-
+#echo $data
 
 ############# step generator
 
@@ -418,28 +438,34 @@ fi
 band=$((band+1))
 
 istart=$((stepper_start_int))
-rm /tmp/stop 2>/dev/null
+#rm /tmp/stop 2>/dev/null
 
 
 
 
 while [ $k -ne $band ]; do
 
-if [ -f /tmp/stop ]; then
-  echo " *** received STOP signal"
-  k=$((band-1))
-fi
+
 
 # display a progress bar using YAD as separate task.
+# caculate progress (percentage)
 # can also send STOP order (cancel button)
 
 percent=$( bc <<<"$k*100/$band") 
 echo $percent > /tmp/percent
 
 
-if [[ $k -eq 1 ]];   then
-    sh $morf_tool_path/progressbar.sh &
+if [ -f /tmp/stop ]; then
+  echo " *** received STOP signal"
+  k=$((band-1))
 fi
+
+
+if [[ $k -eq 1 ]];   then
+   sudo $morf_tool_path/progressbar.sh &
+fi
+
+# send freq to moRFeus & GQRX (if enabled)
 
 
 $morf_tool_path/morfeus_tool setFrequency $i
@@ -467,7 +493,6 @@ k=$((k+1))
 ### Using GQRX and select VFO stepper-mode: get level, store datas, create export file, and live-plot
 
 if [[ $GQRX_STEP = "VFO" ]]; then
-   sleep 0.15
    # get signal level, thanks to @csete
    GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null)
    # however sometimes received signal is 0.0 dB, 
@@ -477,7 +502,7 @@ if [[ $GQRX_STEP = "VFO" ]]; then
    		sleep 0.1
   		 GQRX_LEVEL=$(echo 'l' | socat stdio tcp:$GQRX_IP:$GQRX_PORT,shut-none 2>/dev/null) 
  	done
-
+sleep 0.15
 # store freq,level values in csv file for future use (plot) :
 # same as https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
 # file compatible for use with rtl_power_fftw: https://github.com/AD-Vega/rtl-power-fftw/blob/master/doc/rtl_power_fftw.1.md
@@ -561,10 +586,10 @@ fi
 #       	rm /tmp/file.csv
 # sudo chown $MORF_USER:$MORF_USER ./datas/*
 sleep 0.3
-
+kill $(echo $(pidof sh))
 
 fi
-#mainmenu
+
 }
 
 
@@ -586,13 +611,13 @@ if [[ $ret -eq 127 ]];
    then
 	echo "err 127 "
 	break       	   #Abandon the loop. (error)
-	fi
+   fi
 if [[ $ret -eq 252 ]];
    then
 	echo "User cancel"
 	break       	   #Abandon the loop. (close mainwindow)
    fi
-
+#mainmenu
 done 
  
 }
