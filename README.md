@@ -7,7 +7,7 @@ Product informations : https://store.othernet.is/products/morfeus-1
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 
 UPDATE 08-aug-2018 :
-Updated version is on the way, on the 'next' github branch. Linux 32/64bits only, Rpi to come soon.
+Updated version is on the way, on the 'next' github branch. ~~Linux 32/64bits only, Rpi to come soon.
 
 UPDATE 11-jun-2018 :  
 network support for moRFeus here : https://github.com/LamaBleu/moRFeus_listener  
@@ -25,7 +25,7 @@ Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork
 Installation  
 ============
 
-Short video showing installation and step-generator on Linux 64bits platform : [here](http://www.lamableu.net/files/moRFeus_GUI-install.mkv)
+**Short video** showing installation and step-generator on Linux 64bits platform : [here](http://www.lamableu.net/files/moRFeus_GUI-install.mkv)
 
  #### Raspberry Pi
  
