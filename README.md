@@ -7,9 +7,8 @@ Product informations : https://store.othernet.is/products/morfeus-1
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 
 UPDATE 08/08/2018 : This is the 'next' version.  
-RPi will be supported soon, using unique script.  
 Fixes, added live-plot, progress-bar during step-sequence.  
-Abort during step-sequence is now possible by pressing on "cancel button"  
+Abort during step-sequence is now possible by pressing the "cancel" button  
 GNUPlot (gnuplot AND gnuplot-qt) is not mandatory, only optional.  
 
 
@@ -24,21 +23,22 @@ Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork
 Installation  
 ============
 
-Short video showing installation and step-generator on Linux 64bits platform : [here](http://www.lamableu.net/files/moRFeus_GUI-install.mkv)
+**Short video** showing installation and step-generator on Linux 64bits platform : [here](http://www.lamableu.net/files/moRFeus_GUI-install.mkv)
 
  
-#### Linux
+#### Linux and Raspberry Pi
 
 Automatic install :
 
   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
   `cd moRFeus_GUI`  
-  `chmod +x *.sh`  
-  `gksudo ./GUI_moRFeus.sh`  
+  `git checkout next`  
+  `sudo -H ./GUI_moRFeus.sh`  
 
 
 At first launch the script will try to download the morfeus_tool from Outernet website, then perform installation tasks.
-You will be asked to choose 32 or 64 bits version.
+You will be asked to choose 32, 64 bits or arm (RPi) version.
+In case of trouble, re-launch install by deleting morfeus_tool file (if present)
 
 
 
@@ -78,9 +78,9 @@ CSV export and plotting
 =======================
 
   - use moRFeus as RF generator and GQRX (local or remote) to test antennas, filters, receiver performance. Get signal level at regular steps accross the spectrum and store results in CSV file. Then plot results.  
-     . prepare your stuffs, antenna, receiver, adjust levels ppm calibration and gain on GQRX (set it first to central frequency of the range you will study)  
+     . prepare your stuffs, antenna, receiver, adjust levels, ppm calibration and gain on GQRX (set it first to central frequency of the range you will study)  
      . enable remote control from GQRX. If GQRX is running on remote computer you have to allow client IP address in GQRX remote control settings.  
-     . go to step-generator mode, and select start/stop freqs, power. Choose "send Freq to GQRX : VFO". Run stepper, wait...    
+     . go to step-generator mode, and select start/stop freqs, power. Choose **"send Freq to GQRX : VFO"**. Run stepper, wait...    
      . at the end of process csv file is generated (freq level) in ./datas directory  
      . **Only if** gnuplot and gnuplot-qt packages are installed, a resulting plot will be displayed, and saved to ./datas/ directory  
      . full example is provided in ./datas/ directory, with gnuplot script to plot again graph from CSV file.  
