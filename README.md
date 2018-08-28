@@ -6,17 +6,17 @@ Designed only for moRFeus device (RF mixer/generator made by Outernet).
 Product informations : https://store.othernet.is/products/morfeus-1   
 This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
 
-UPDATE 08/08/2018 : This is the 'next' version.  
+UPDATE August 2018 : This is the new version for moRFeus_GUI, codename hydra.  
 Fixes, added live-plot, progress-bar during step-sequence.  
 Abort during step-sequence is now possible by pressing the "cancel" button  
-GNUPlot (gnuplot AND gnuplot-qt) is not mandatory, only optional.  
+GNUPlot (gnuplot AND gnuplot-qt packages) is not mandatory, only optional.  
 
 
 New feature to "get signal level from GQRX" with CSV export file and plots, when running step generator.  
 Why ? more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
   
-Code is very crude, with no error checking. Feel free to use it, improve it.  
-Reporting bug, issue, or just experience, you are welcome : github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarragepas (reddit)
+
+Reporting bug, issue, ideas or just share experience, you are welcome : here on github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarragepas (reddit)
 
 
 
@@ -32,13 +32,11 @@ Automatic install :
 
   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
   `cd moRFeus_GUI`  
-  `git checkout next`  
   `sudo -H ./GUI_moRFeus.sh`  
-
 
 At first launch the script will try to download the morfeus_tool from Outernet website, then perform installation tasks.
 You will be asked to choose 32, 64 bits or arm (RPi) version.
-In case of trouble, re-launch install by deleting morfeus_tool file (if present)
+In case of trouble, re-launch install by deleting morfeus_tool file (if present). See also troubleshooting section on this README.
 
 
 
@@ -116,20 +114,15 @@ Troubleshooting
   
   
 * sudo or not sudo ?  
-my choice is to stay as simple user, however this can be boring.  
+my choice is to stay as simple user with no sudo/root rights, however this can be boring.  
 
 sudo :  
-Install may fail sometimes, depending on your platform or distrib.  
-Main symptom : you are not asked to download the version of morfeus_tool, and script will  install 32bits version.  
-The workaround is to first erase 'morfeus_tool' executable, then try another combination for sudo, like gksudo, sudo -H to lauch GUI_moRFeus.sh  
+Install may fail sometimes, depending on your platform, distrib, local or remote access (RDP/VNC).  
+Main symptom : you are not asked to download the version of morfeus_tool, and script will downlad 32bits version by itself.  Workaround is to first delete 'morfeus_tool' executable, then try another combination for sudo, like gksudo, sudo -H to launch GUI_moRFeus.sh  
 
 not sudo :  
 Update udev rules for moRFeus and apply intructions [from here](https://archive.othernet.is/morfeus_tool_v1.6/morfeus.udev.rules)
-  
-  
-  
-* In case automatic install fails just delete the morfeus_tool executable file present in moRFeus_GUI directory.  
-Script will try to download it again and perform necesary steps for a first use.  
+
   
 * GQRX link : check remote control settings menu, to allow remote computer to control VFO  
 Details on GQRX website :  http://gqrx.dk/doc/remote-control  
