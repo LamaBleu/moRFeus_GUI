@@ -36,7 +36,8 @@ You will be asked to choose 32, 64 bits or armv7 (RPi) version.
 In case of trouble, re-launch install by deleting morfeus_tool file (if present).  
 See also troubleshooting section on this README.
 
-
+Depending your environment, the "ssh -XC pi@192.168.5.23" option is also very interesting to remotely launch GUI_moRFeus 
+if you don't need a remote full X-Windows desktop.
 
  
 Usage  
@@ -97,7 +98,12 @@ more infos here on : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-t
 GQRX support  
 ============
 Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous work ;) )  
- Adapt parameters in this file to GQRX settings (should be OK by default)  
+ Adapt following parameters in GUI_moRFeus.sh file to GQRX settings (should be OK by default for local use)  
+
+`GQRX_ENABLE=1`  
+`GQRX_IP=127.0.0.1`  
+`GQRX_PORT=7356`  
+ 
  
  From the main window, you can :  
 	- read actual GQRX VFO and LNB_LO values.  
@@ -113,14 +119,14 @@ Troubleshooting
   
   
 * sudo or not sudo ?  
-my choice is to stay as simple user with no sudo/root rights, however this can be boring.  
+my choice is to stay as simple user with no sudo/root rights, and I must admit this can be boring. However ... 
 
 sudo :  
 Install may fail sometimes, depending on your platform, distrib, local or remote access (RDP/VNC).  
 Main symptom : you are not asked to download the version of morfeus_tool, and script will downlad 32bits version by itself.  Workaround is to first delete 'morfeus_tool' executable, then try another combination for sudo, like gksudo, sudo -H to launch GUI_moRFeus.sh  
 
 not sudo :  
-Update udev rules for moRFeus and apply intructions [from here](https://archive.othernet.is/morfeus_tool_v1.6/morfeus.udev.rules)
+Update udev rules for moRFeus applying intructions [from here](https://archive.othernet.is/morfeus_tool_v1.6/morfeus.udev.rules)
 
 
   
