@@ -111,8 +111,10 @@ Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous 
 	  
  
  
-#### Troubleshooting  
-
+Troubleshooting  
+===============
+  
+  
 * sudo or not sudo ?  
 my choice is to stay as simple user, however this can be boring.  
 
@@ -123,8 +125,9 @@ The workaround is to first erase 'morfeus_tool' executable, then try another com
 
 not sudo :  
 Update udev rules for moRFeus and apply intructions [from here](https://archive.othernet.is/morfeus_tool_v1.6/morfeus.udev.rules)
-
-
+  
+  
+  
 * In case automatic install fails just delete the morfeus_tool executable file present in moRFeus_GUI directory.  
 Script will try to download it again and perform necesary steps for a first use.  
   
@@ -145,7 +148,7 @@ Details on GQRX website :  http://gqrx.dk/doc/remote-control
 Known issues.  
 =============
 
-Program runs a little bit slower with GQRX support enabled. 
+Program runs a little bit slower with GQRX support enabled.  
 If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on GUI_moRFeus.sh file 
 
 
