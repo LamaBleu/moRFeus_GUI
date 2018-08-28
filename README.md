@@ -60,6 +60,8 @@ Step generator
 ![image](https://user-images.githubusercontent.com/26578895/38948007-aca71f4e-433e-11e8-9bfe-714a17975774.png)
 
 
+3-minutes video showing step-generator and plotting  : https://www.youtube.com/watch?v=m0agjpfRzyg
+
 The best is to have a look at this other screenshot first : https://imgur.com/6RdO9LO   
 Step generator mode will allow to increment the frequency (switched to generator mode) by steps (Hz) of regular interval (seconds)  
 Power can be set at this moment. moRFeus device will toggle to generator mode.  
@@ -110,33 +112,25 @@ Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous 
 
 
 
-#### Manual installation
+#### Troubleshooting
 
-Just in case automatic install fails.
-
-* As pre-requisite you have to install yad ,socat and bc packages  
-     sudo apt-get install yad socat bc  
+* In case automatic install fails just delete the morfeus_tool executable file present in moFReus_GUI directory.  
+Script will try to download it again and perform important step for a first use.  
+  
+* GQRX link : check remote control settings menu, to allow remote computer to control VFO  
+Details on GQRX website :  http://gqrx.dk/doc/remote-control  
      
-* Download and copy this script into a directory :  
-   `git clone https://github.com/LamaBleu/moRFeus_GUI`  
-   `cd moRFeus_GUI`    
- 
-* Download morfeus_tool executable from Outernet website: https://archive.othernet.is/morfeus_tool_v1.6/  
-- Choose the right version, adapted to your platform.  (Linux- 32 or 64bits)    
-- Copy the tool to the same directory. RENAME it 'morfeus_tool' !  
-- Make  files executable (cd to directory ). No need to change files owner.  
-`chmod +x *.sh`  
-`chmod +x morfeus_tool`  
-   
-!!!!!! IMPORTANT !!!!!!  
-As you need to be root to communicate with the device, launch the UI typing from shell :   
-       `sudo ./GUI_moRFeus.sh`  
 
 
-Known bugs.  
-===========
+
+Known issues.  
+=============
 
 Program runs a little bit slower with GQRX support enabled. 
-If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on this file.  
+If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on GUI_moRFeus.sh file 
 
 
+Credits
+=======
+Thanks to Outernet team, othernet forum contributors, Karl from rtl-sdr.com blog, [Alex OZ9AEC](http://gqrx.dk).  
+Special thanks to [Psynosaur](https://github.com/Psynosaur) and Konrad WA4OSH for sharing ideas and experience.  
