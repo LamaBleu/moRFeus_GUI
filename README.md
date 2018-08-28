@@ -133,11 +133,11 @@ Details on GQRX website :  http://gqrx.dk/doc/remote-control
 * You can check connection usinc `nc` or `netcat` command to GQRX:  
  by sendin 'f' or 'l' command to GQRX you should receive actual VFO frequency (f) or signal level (l) 
  
- `nc 127.0.0.1 7356
- l
- -66.2
- f
- 1296502310'`
+ `nc 127.0.0.1 7356  
+ l  
+ -66.2  
+ f  
+ 1296502310'`  
      
 
 
@@ -151,5 +151,5 @@ If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on GU
 
 Credits
 =======
-Thanks to Outernet team, othernet forum contributors, Karl from rtl-sdr.com blog, [Alex OZ9AEC](http://gqrx.dk).  
+Thanks to Outernet/Othernet team, Othernet forum contributors, Karl from rtl-sdr.com blog, [Alex OZ9AEC](http://gqrx.dk).  
 Special thanks to [Psynosaur](https://github.com/Psynosaur) and Konrad WA4OSH for sharing ideas and experience.  
