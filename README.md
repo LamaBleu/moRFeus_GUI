@@ -55,12 +55,13 @@ Nothing else to say.
 Step generator
 ==============
 
+
+  
 ![image](https://user-images.githubusercontent.com/26578895/38948007-aca71f4e-433e-11e8-9bfe-714a17975774.png)
 
-
-3-minutes video showing use of step-generator and plotting  : https://www.youtube.com/watch?v=m0agjpfRzyg
-
-
+    
+**3-minutes video showing use of step-generator and plotting**  : https://www.youtube.com/watch?v=m0agjpfRzyg
+  
 Step generator mode will allow to increment the frequency (switched to generator mode) by steps (Hz) of regular interval (seconds)  
 Power can be set at this moment. moRFeus device will toggle to generator mode.  
 Steps can be negative (decremental steps) if F-start > F-end  
@@ -123,6 +124,9 @@ Main symptom : you are not asked to download the version of morfeus_tool, and sc
 not sudo :  
 Update udev rules for moRFeus and apply intructions [from here](https://archive.othernet.is/morfeus_tool_v1.6/morfeus.udev.rules)
 
+
+  
+  
   
 * GQRX link : check remote control settings menu, to allow remote computer to control VFO  
 Details on GQRX website :  http://gqrx.dk/doc/remote-control  
