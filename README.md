@@ -2,9 +2,9 @@
 
 A simple tool to control your moRFeus device from your Linux-computer or Raspberry Pi
 
-Designed only for moRFeus device (RF mixer/generator made by Outernet).  
+Designed only for moRFeus device (RF mixer/generator made by Outernet/Othernet).  
 Product informations : https://store.othernet.is/products/morfeus-1   
-This tool was written using only 'yad' and bash to make my moRFeus user life easier.  
+This tool was written using only 'yad' as GUI and bash to make my moRFeus user life easier.  
 
 UPDATE August 2018 : This is the new version for moRFeus_GUI, codename hydra.  
 Fixes, added live-plot, progress-bar during step-sequence.  
@@ -12,9 +12,6 @@ Abort during step-sequence is now possible by pressing the "cancel" button
 GNUPlot (gnuplot AND gnuplot-qt packages) is not mandatory, only optional.  
 
 
-New feature to "get signal level from GQRX" with CSV export file and plots, when running step generator.  
-Why ? more here : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/
-  
 
 Reporting bug, issue, ideas or just share experience, you are welcome : here on github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarragepas (reddit)
 
@@ -35,8 +32,9 @@ Automatic install :
   `sudo -H ./GUI_moRFeus.sh`  
 
 At first launch the script will try to download the morfeus_tool from Outernet website, then perform installation tasks.
-You will be asked to choose 32, 64 bits or arm (RPi) version.
-In case of trouble, re-launch install by deleting morfeus_tool file (if present). See also troubleshooting section on this README.
+You will be asked to choose 32, 64 bits or armv7 (RPi) version.  
+In case of trouble, re-launch install by deleting morfeus_tool file (if present).  
+See also troubleshooting section on this README.
 
 
 
@@ -152,4 +150,4 @@ If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on GU
 Credits
 =======
 Thanks to Outernet/Othernet team, Othernet forum contributors, Karl from rtl-sdr.com blog, [Alex OZ9AEC](http://gqrx.dk).  
-Special thanks to [Psynosaur](https://github.com/Psynosaur) and Konrad WA4OSH for sharing ideas and experience.  
+Special thanks to [Psynosaur](https://github.com/Psynosaur) and Konrad WA4OSH for sharing ideas, time and experience.  
