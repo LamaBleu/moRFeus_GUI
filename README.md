@@ -13,7 +13,7 @@ GNUPlot (gnuplot AND gnuplot-qt packages) is not mandatory, only optional.
 
 
 
-Reporting bug, issue, ideas or just share experience, you are welcome : here on github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarragepas (reddit)
+Reporting bug, issue, ideas or just share experience, you are welcome : here on github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarrangepas (reddit)
 
 
 
