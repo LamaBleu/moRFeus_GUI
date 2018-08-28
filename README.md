@@ -60,9 +60,9 @@ Step generator
 ![image](https://user-images.githubusercontent.com/26578895/38948007-aca71f4e-433e-11e8-9bfe-714a17975774.png)
 
 
-3-minutes video showing step-generator and plotting  : https://www.youtube.com/watch?v=m0agjpfRzyg
+3-minutes video showing use of step-generator and plotting  : https://www.youtube.com/watch?v=m0agjpfRzyg
 
-The best is to have a look at this other screenshot first : https://imgur.com/6RdO9LO   
+
 Step generator mode will allow to increment the frequency (switched to generator mode) by steps (Hz) of regular interval (seconds)  
 Power can be set at this moment. moRFeus device will toggle to generator mode.  
 Steps can be negative (decremental steps) if F-start > F-end  
@@ -87,8 +87,10 @@ CSV export and plotting
      . **Only if** gnuplot and gnuplot-qt packages are installed, a resulting plot will be displayed, and saved to ./datas/ directory  
      . full example is provided in ./datas/ directory, with gnuplot script to plot again graph from CSV file.  
   
-Here is an example, testing an old UHF TV antenna:  
-![image](https://user-images.githubusercontent.com/26578895/42124301-55954e28-7c60-11e8-908d-3f98e4446634.png)
+Here is an example, testing the LNA-SAW filter from NooElec.
+This plot is shown on the video above :
+![image](https://user-images.githubusercontent.com/26578895/44737447-50405100-aaf2-11e8-9762-1916575437a6.png)
+
   
 more infos here on : https://www.rtl-sdr.com/using-an-rtl-sdr-and-morfeus-as-a-tracking-generator-to-measure-filters-and-antenna-vswr/  
     
@@ -108,17 +110,34 @@ Informations about GQRX: http://gqrx.dk (thanks to Alex for nice and continuous 
 	- reset GQRX LNB_LO freq. to 0 
 	  
  
- From the step generator menu, you can send the moRFeus frequency to GQRX, and so follow the signal. Cool!  
+ 
+#### Troubleshooting  
+
+* sudo or not sudo ?  
+my choice is to stay as simple user, however this can be boring.  
+
+sudo :  
+Install may fail sometimes, depending on your platform or distrib.  
+Main symptom : you are not asked to download the version of morfeus_tool, and script will  install 32bits version.  
+The workaround is to first erase 'morfeus_tool' executable, then try another combination for sudo, like gksudo, sudo -H to lauch GUI_moRFeus.sh  
+
+not sudo :  
+Update udev rules for moRFeus and apply intructions [from here](https://archive.othernet.is/morfeus_tool_v1.6/morfeus.udev.rules)
 
 
-
-#### Troubleshooting
-
-* In case automatic install fails just delete the morfeus_tool executable file present in moFReus_GUI directory.  
-Script will try to download it again and perform important step for a first use.  
+* In case automatic install fails just delete the morfeus_tool executable file present in moRFeus_GUI directory.  
+Script will try to download it again and perform necesary steps for a first use.  
   
 * GQRX link : check remote control settings menu, to allow remote computer to control VFO  
 Details on GQRX website :  http://gqrx.dk/doc/remote-control  
+* You can check connection usinc `nc` or `netcat` command to GQRX:  
+ by sendin 'f' or 'l' command to GQRX you should receive actual VFO frequency (f) or signal level (l) 
+ 
+ `nc 127.0.0.1 7356
+ l
+ -66.2
+ f
+ 1296502310'`
      
 
 
