@@ -59,7 +59,7 @@ Step generator
 ![image](https://user-images.githubusercontent.com/26578895/38948007-aca71f4e-433e-11e8-9bfe-714a17975774.png)
 
     
-**3-minutes video showing use of step-generator and plotting**  : https://www.youtube.com/watch?v=m0agjpfRzyg
+**3-minutes video showing use of step-generator and plotting**  : [youtube](https://www.youtube.com/watch?v=m0agjpfRzyg&cc_load_policy)
   
 Step generator mode will allow to increment the frequency (switched to generator mode) by steps (Hz) of regular interval (seconds)  
 Power can be set at this moment. moRFeus device will toggle to generator mode.  
