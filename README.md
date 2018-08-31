@@ -155,5 +155,5 @@ If you don't use GQRX you can disable the feature by setting GQRX_ENABLE=0 on GU
 
 Credits
 =======
-Thanks to Outernet/Othernet team, Othernet forum contributors, Karl from rtl-sdr.com blog, [Alex OZ9AEC](http://gqrx.dk).  
+Thanks to [Outernet/Othernet](https://othernet.is) team, [Othernet forum contributors](https://forums.othernet.is/t/rf-product-morfeus-frequency-converter-and-signal-generator/5025/), Carl from [rtl-sdr.com blog](https://www.rtl-sdr.com/tag/morfeus/), [Alex OZ9AEC](http://gqrx.dk).  
 Special thanks to [Psynosaur](https://github.com/Psynosaur) and Konrad WA4OSH for sharing ideas, time and experience.  
