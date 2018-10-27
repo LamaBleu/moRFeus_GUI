@@ -5,13 +5,23 @@ A simple tool to control your moRFeus device from your Linux-computer or Raspber
 Designed only for moRFeus device (RF mixer/generator made by Outernet/Othernet).  
 Product informations : https://store.othernet.is/products/morfeus-1   
 This tool was written using only 'yad' as GUI and bash to make my moRFeus user life easier.  
-
-UPDATE August 2018 : This is the new version for moRFeus_GUI, codename hydra.  
+  
+  
+  
+#### UPDATE August 2018 : This is the new version for moRFeus_GUI, codename hydra.  
 Fixes, added live-plot, progress-bar during step-sequence.  
 Abort during step-sequence is now possible by pressing the "cancel" button  
 GNUPlot (gnuplot AND gnuplot-qt packages) is not mandatory, only optional.  
-
-
+Initial version (april 2018) is available here : https://github.com/LamaBleu/moRFeus_GUI/tree/initial-apr2018
+  
+  
+#### Network support for moRFeus
+Another tool to control your moRFeus device over network, using TCP requests/telnet commands, HTTP status.  
+CLI available from shell for local use. 
+Please follow this link : https://github.com/LamaBleu/moRFeus_listener  
+  
+  
+  
 
 Reporting bug, issue, ideas or just share experience, you are welcome : here on github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarrangepas (reddit)
 
@@ -77,7 +87,7 @@ When using this feature please consider :
 CSV export and plotting
 =======================
 
-  - use moRFeus as RF generator and GQRX (local or remote) to test antennas, filters, receiver performance. Get signal level at regular steps accross the spectrum and store results in CSV file. Then plot results.  
+  - use moRFeus as RF generator and GQRX (local or remote) to test antennas, filters, receiver performance. Get signal level at regular steps accross the RF spectrum and store results in CSV file. Then plot results.  
      . prepare your stuffs, antenna, receiver, adjust levels, ppm calibration and gain on GQRX (set it first to central frequency of the range you will study)  
      . enable remote control from GQRX. If GQRX is running on remote computer you have to allow client IP address in GQRX remote control settings.  
      . go to step-generator mode, and select start/stop freqs, power. Choose **"send Freq to GQRX : VFO"**. Run stepper, wait...    
