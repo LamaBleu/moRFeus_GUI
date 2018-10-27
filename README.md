@@ -15,6 +15,7 @@ GNUPlot (gnuplot AND gnuplot-qt packages) is not mandatory, only optional.
 Initial version (april 2018) is available here : https://github.com/LamaBleu/moRFeus_GUI/tree/initial-apr2018
   
   
+  
 #### Network support for moRFeus
 Another tool to control your moRFeus device over network, using TCP requests/telnet commands, HTTP status.  
 CLI available from shell for local use. 
@@ -22,10 +23,11 @@ Please follow this link : https://github.com/LamaBleu/moRFeus_listener
   
   
   
-
+  
+#### Contact
 Reporting bug, issue, ideas or just share experience, you are welcome : here on github, @fonera_cork (twitter), lama.bleu (gmail), /u/samarrangepas (reddit)
-
-
+  
+  
 
 Installation  
 ============
@@ -46,8 +48,8 @@ You will be asked to choose 32, 64 bits or armv7 (RPi) version.
 In case of trouble, re-launch install by deleting morfeus_tool file (if present).  
 See also troubleshooting section on this README.
 
-Depending your environment, the "ssh -XC pi@192.168.5.23" option is also very interesting to remotely launch GUI_moRFeus 
-if you don't need a remote full X-Windows desktop.
+Depending your environment, the "ssh -XC pi@<RPi_ip_address>" option is also very interesting to launch GUI_moRFeus 
+from remote RPi if you don't need a remote full X-Windows desktop (means: don't connect using VNC/RDP).
 
  
 Usage  
@@ -63,7 +65,6 @@ Nothing else to say.
 
 Step generator
 ==============
-
 
   
 ![image](https://user-images.githubusercontent.com/26578895/38948007-aca71f4e-433e-11e8-9bfe-714a17975774.png)
@@ -145,18 +146,18 @@ Update udev rules for moRFeus applying intructions [from here](https://archive.o
 * GQRX link : check remote control settings menu, to allow remote computer to control VFO  
 Details on GQRX website :  http://gqrx.dk/doc/remote-control  
 * You can check connection usinc `nc` or `netcat` command to GQRX:  
- by sendin 'f' or 'l' command to GQRX you should receive actual VFO frequency (f) or signal level (l) 
+ by sending 'f' or 'l' command to GQRX you should receive actual VFO frequency (f) or signal level (l) 
  
  `nc 127.0.0.1 7356`  
  `l`  
  `-66.2`  
  `f`  
- `1296502310'`  
+ `1296502310`  
      
 
 
 
-Known issues.  
+Known issues  
 =============
 
 Program runs a little bit slower with GQRX support enabled.  
